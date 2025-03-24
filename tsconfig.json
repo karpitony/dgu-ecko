@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "outDir": "dist_ts",
+    "module": "esnext",
+    "target": "esnext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "./src/content_scripts/**/*",
+    "./src/service_worker/**/*",
+    "./src/inject/**/*",
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "dist_ts",
+    "popup",
+    "side_panel",
+  ]
+}

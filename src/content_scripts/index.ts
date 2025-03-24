@@ -1,0 +1,1 @@
+console.log('Hello from content_scripts/index.ts');

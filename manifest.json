@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json.schemastore.org/chrome-manifest",
+  "manifest_version": 3,
+  "name": "my extension",
+  "description": "This extension is a starting point to create a real extension",
+  "version": "0.1.0",
+  "action": {
+    "default_title": "my extension",
+    "default_popup": "popup/index.html"
+  },
+  "side_panel": {
+    "default_path": "side_panel/index.html"
+  },
+  "background": {
+    "service_worker": "service_worker/index.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content_scripts/index.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["inject/index.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "permissions": [
+    "scripting",
+    "storage",
+    "tabs",
+    "sidePanel"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "icons": {
+    "16": "assets/icons/icon16.png",
+    "48": "assets/icons/icon48.png",
+    "128": "assets/icons/icon128.png"
+  }
+}

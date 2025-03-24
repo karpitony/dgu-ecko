@@ -1,0 +1,1 @@
+console.log('Hello from service_worker/index.ts');
