@@ -4,10 +4,11 @@
     "module": "esnext",
     "target": "esnext",
     "moduleResolution": "node",
+    "isolatedModules": false,
     "esModuleInterop": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
   },
   "include": [
     "./src/content_scripts/**/*",
