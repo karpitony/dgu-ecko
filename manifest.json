@@ -1,13 +1,9 @@
 {
   "$schema": "https://json.schemastore.org/chrome-manifest",
   "manifest_version": 3,
-  "name": "my extension",
-  "description": "This extension is a starting point to create a real extension",
+  "name": "이코 (이클래스 도와주는 코끼리)",
+  "description": "동국대학교 이클래스 보조 확장 프로그램입니다.",
   "version": "0.1.0",
-  "action": {
-    "default_title": "my extension",
-    "default_popup": "popup/index.html"
-  },
   "side_panel": {
     "default_path": "side_panel/index.html"
   },

@@ -7,12 +7,6 @@ async function main() {
     const distRoot = path.join(__dirname, 'dist');
     await fs.remove(distRoot);
 
-    // 2. src/popup/dist -> dist/popup
-    const popupDist = path.join(__dirname, 'src', 'popup', 'dist');
-    const distPopup = path.join(distRoot, 'popup');
-    await fs.copy(popupDist, distPopup);
-    console.log('Copied src/popup/dist -> dist/popup');
-
     // 3. src/side_panel/dist -> dist/side_panel
     const sidePanelDist = path.join(__dirname, 'src', 'side_panel', 'dist');
     const distSidePanel = path.join(distRoot, 'side_panel');

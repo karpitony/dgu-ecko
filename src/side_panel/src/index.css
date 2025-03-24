@@ -1,29 +1,63 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
-/*
-  The default border color has changed to `currentColor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
-@layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentColor);
-  }
-}
-
-* {
-  padding: 0;
+/* 브라우져 기본 CSS Reset */
+*,
+*::before,
+*::after {
   margin: 0;
+  padding: 0;
   box-sizing: border-box;
 }
 
+html {
+  line-height: 1.5; /* 텍스트 가독성을 위한 기본 줄 간격 */
+  font-family: Arial, sans-serif; /* 기본 폰트 설정 */
+  -webkit-text-size-adjust: 100%; /* 모바일에서 텍스트 확대 방지 */
+}
+
 body {
-  min-height: 100vh;
+  margin: 0;
+}
+
+a {
+  text-decoration: none; /* 링크의 밑줄 제거 */
+  color: inherit; /* 부모의 글자색을 따름 */
+}
+
+ul,
+ol {
+  list-style: none; /* 목록의 기본 점 제거 */
+}
+
+button,
+input,
+textarea {
+  font-family: inherit; /* 부모 폰트를 상속받음 */
+  border: none;
+  background: none;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block; /* inline 속성 제거 */
+  max-width: 100%; /* 컨테이너 크기를 벗어나지 않도록 제한 */
+  height: auto; /* 이미지 비율 유지 */
+}
+
+table {
+  border-collapse: collapse; /* 테이블 셀 간 간격 제거 */
+  border-spacing: 0;
+}
+
+@layer base {
+  ul, ol {
+    list-style: none;
+  }
+
+  li::marker {
+    content: none !important;
+  }
 }
