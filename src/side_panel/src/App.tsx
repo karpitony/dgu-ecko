@@ -1,5 +1,6 @@
 import { useState } from "react"
 import Header from "@/components/Header";
+import HomePage from "@/pages/HomePage";
 
 export type PageList = "home" | "assignment" | "cyber-class" |"settings";
 
@@ -9,9 +10,7 @@ export default function App() {
   return (
     <div className="flex flex-col itmes-center h-screen bg-[#FAF0E6	]">
       <Header currentPage={currentPage} setCurrentPage={setCurrentPage} />
-      <div className="font-bold text-2xl text-center">
-        Hello World!
-      </div>
+      {currentPage === "home" && <HomePage />}
     </div>
   )
 }
