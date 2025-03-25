@@ -72,21 +72,27 @@ function parseVodFromHtml(html: string): VodLecture[] {
 /**
  * 전체 사이버 강의 정보 fetch + 파싱
  */
-async function fetchAndParseVod(courseId: string): Promise<VodLecture[] | null> {
+async function fetchAndParseVod(courseId: string, courseTitle: string): Promise<VodLecture[] | null> {
   const html = await fetchCoursePage(courseId);
   if (!html) return null;
 
   const lectures = parseVodFromHtml(html);
-  console.log('[이코] 파싱된 사이버 강의 목록:', lectures);
-  chrome.runtime.sendMessage({ type: 'COURSE_VOD_DATA', lectures })
+  console.log(`[이코] ${courseTitle}(${courseId}) 파싱된 사이버 강의 목록:`, lectures);
+  const courseVodData:CourseVodData = {
+    courseId,
+    courseTitle,
+    fetchedAt: new Date().toISOString().slice(0, 10), // YYYY-MM-DD
+    lectures,
+  }
+  chrome.runtime.sendMessage({ type: 'COURSE_VOD_DATA', data: courseVodData });
   return lectures;
 }
 
 (() => {
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.type === 'PARSE_VOD_FOR_ID' && message.courseId) {
-      console.log(`[이코] 사이버 강의 정보 파싱 요청: ${message.courseId}`);
-      fetchAndParseVod(message.courseId);
+    if (message.type === 'PARSE_VOD_FOR_ID' && message.courseId && message.courseTitle) {
+      console.log(`[이코] 사이버 강의 정보 파싱 요청:  ${message.courseTitle}(${message.courseId})`);
+      fetchAndParseVod(message.courseId, message.courseTitle);
     }
   });
 })();
