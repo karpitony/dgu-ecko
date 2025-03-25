@@ -1,5 +1,8 @@
 import { CourseInfo, CourseVodData } from '../types';
 
+let totalVodCount = 0;
+let completedVodCount = 0;
+
 /**
  * 주어진 JS 파일을 탭에 동적으로 삽입(inject)한다.
  */
@@ -59,6 +62,7 @@ export async function getCourseIds(tabId: number): Promise<CourseInfo[]> {
         chrome.storage.local.set({ courseIds: message.data }, () => {
           resolve(message.data);
         });
+        totalVodCount = message.data.length;
       }
     };
     chrome.runtime.onMessage.addListener(listener);
@@ -106,6 +110,8 @@ chrome.runtime.onMessage.addListener((message: MessagePayload, sender, sendRespo
       chrome.storage.local.set({ [storageKey] : message.data }, () => {
         console.log(`[이코] ${courseTitle}(${courseId}) 저장 완료: ${storageKey}`);
       });
+      completedVodCount++;
+      completeGetTotalVodCount();
       break;
     }
 
@@ -118,6 +124,8 @@ chrome.runtime.onMessage.addListener((message: MessagePayload, sender, sendRespo
  * 전체 강의 목록 처리: getCourseIds → 캐시 체크 → 없으면 fetchAndParseVod 스크립트 삽입
  */
 async function handleAllCourseVod() {
+  completedVodCount = 0;
+
   const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
   const tabId = tabs[0]?.id;
   if (!tabId) {
@@ -127,6 +135,8 @@ async function handleAllCourseVod() {
   const courseList = await getCourseIds(tabId);
   if (!courseList.length) {
     throw new Error('강의 목록을 불러올 수 없습니다.');
+  } else {
+    totalVodCount = courseList.length;
   }
 
   const today = new Date().toISOString().slice(0, 10);
@@ -144,6 +154,8 @@ async function handleAllCourseVod() {
 
       if (cached && cached.fetchedAt === today) {
         console.log(`[이코] 캐시 사용 : ${cached.courseTitle}(${course.id})`);
+        completedVodCount++;
+        completeGetTotalVodCount();
         return;
       }
 
@@ -155,4 +167,20 @@ async function handleAllCourseVod() {
       console.log(`[이코] PARSE_VOD_FOR_ID 요청 완료: ${cached.courseTitle}(${course.id})`);
     }),
   );
+}
+
+async function completeGetTotalVodCount() {
+  if (completedVodCount === totalVodCount) {
+    console.log('[이코] 전체 VOD 데이터 수집 완료');
+    const { courseIds } = await chrome.storage.local.get('courseIds');
+
+    let allVodData: CourseVodData[] = [];
+    for (const course of courseIds) {
+      const storageKey = `course_${course.id}_vod`;
+      const result = await chrome.storage.local.get({ [storageKey]: null });
+      allVodData.push(result[storageKey] ?? {});
+    }
+
+    chrome.runtime.sendMessage({ type: 'ALL_COURSE_VOD_DATA', payload: allVodData });
+  }
 }

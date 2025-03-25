@@ -56,6 +56,37 @@ export default function HomePage() {
     fetchFirstCourseWithVod();
   }, []);
 
+  useEffect(() => {
+    // 2) 백그라운드 / 다른 스크립트에서 오는 메시지를 수신할 리스너
+    const handleMessage = (
+      message: { type: string; payload: CourseVodData[] },
+      //sender: chrome.runtime.MessageSender
+    ) => {
+      if (message.type === 'ALL_COURSE_VOD_DATA') {
+        console.log('[이코] 사이드패널에서 받은 전체 VOD 데이터:', message.payload);
+
+        const nextCourses: CourseWithVod[] = message.payload.map((data: CourseVodData) => ({
+          id: data.courseId,
+          title: data.courseTitle,
+          professor: '확인 필요',
+          lectures: data.lectures,
+        }));
+
+        setCourses(nextCourses);
+
+        setLoading(false);
+      }
+    };
+
+    chrome.runtime.onMessage.addListener(handleMessage);
+
+    // 컴포넌트 언마운트 시 리스너 제거
+    return () => {
+      chrome.runtime.onMessage.removeListener(handleMessage);
+    };
+  }, []);
+
+
   if (loading) {
     return <div className="p-4 text-center text-gray-500">불러오는 중...</div>;
   }
