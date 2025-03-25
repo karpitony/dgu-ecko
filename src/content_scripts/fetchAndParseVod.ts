@@ -2,8 +2,6 @@
  * 이클래스 사이버 강의 정보를 가져오고 파싱
  */
 
-import { VodLecture } from '../types';
-
 console.log('[이코] Content script loaded on eclass page.');
 
 async function fetchCoursePage(courseId: string): Promise<string | null> {
@@ -87,6 +85,7 @@ async function fetchAndParseVod(courseId: string): Promise<VodLecture[] | null> 
 (() => {
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'PARSE_VOD_FOR_ID' && message.courseId) {
+      console.log(`[이코] 사이버 강의 정보 파싱 요청: ${message.courseId}`);
       fetchAndParseVod(message.courseId);
     }
   });
