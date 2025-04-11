@@ -1,13 +1,13 @@
 {
   "compilerOptions": {
-    "outDir": "dist_ts",
+    "target": "es2020",
     "module": "esnext",
-    "target": "esnext",
     "moduleResolution": "node",
+    "outDir": "dist_ts",
     "esModuleInterop": true,
-    "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true
+    "strict": true,
+    "skipLibCheck": true,
   },
   "include": [
     "./src/content_scripts/**/*",

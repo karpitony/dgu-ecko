@@ -11,19 +11,6 @@
     "service_worker": "service_worker/index.js",
     "type": "module"
   },
-  "content_scripts": [
-    {
-      "matches": ["https://eclass.dongguk.edu/*"],
-      "js": ["content_scripts/index.js"],
-      "run_at": "document_idle"
-    }
-  ],
-  "web_accessible_resources": [
-    {
-      "resources": ["inject/index.js"],
-      "matches": ["https://eclass.dongguk.edu/*"]
-    }
-  ],
   "permissions": [
     "scripting",
     "storage",

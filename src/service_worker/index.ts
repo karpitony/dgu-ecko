@@ -1,29 +1,186 @@
+import { CourseInfo, CourseVodData } from '../types';
+
+let totalVodCount = 0;
+let completedVodCount = 0;
+
+/**
+ * 주어진 JS 파일을 탭에 동적으로 삽입(inject)한다.
+ */
+function injectContentScript(tabId: number, filePath: string): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    chrome.scripting.executeScript(
+      { 
+        target: { tabId }, 
+        files: [filePath] 
+      },
+      (results) => {
+        const lastError = chrome.runtime.lastError;
+        if (lastError) {
+          console.error(`콘텐츠 스크립트 삽입 실패 [${filePath}]`, lastError);
+          reject(lastError);
+          return;
+        }
+
+        console.log(`콘텐츠 스크립트 삽입 성공 [${filePath}]`, results);
+        resolve();
+      }
+    );
+  });
+}
+
+/**
+ * 탭에 메시지를 보내고, 콜백이 끝날 때까지 기다린다.
+ */
+function sendMessageToTab(tabId: number, message: any) {
+  return new Promise<void>((resolve) => {
+    chrome.tabs.sendMessage(tabId, message, () => {
+      resolve();
+    });
+  });
+}
+
+/**
+ * 이미 스토리지에 있으면 가져오고, 없으면 content_scripts/getCourseId.js 실행하여 가져온다.
+ */
+export async function getCourseIds(tabId: number): Promise<CourseInfo[]> {
+  const { courseIds } = await chrome.storage.local.get('courseIds');
+  if (courseIds) {
+    console.log('[이코] 스토리지에서 courseIds 불러옴');
+    return courseIds;
+  }
+
+  console.log('[이코] 콘텐츠 스크립트(getCourseId) 삽입 시작');
+  await injectContentScript(tabId, 'content_scripts/getCourseId.js');
+
+  return new Promise<CourseInfo[]>((resolve) => {
+    // 메시지 대기
+    const listener = (message: any) => {
+      if (message.type === 'COURSE_IDS') {
+        chrome.runtime.onMessage.removeListener(listener);
+        console.log('[이코] 수신된 courseIds:', message.data);
+
+        chrome.storage.local.set({ courseIds: message.data }, () => {
+          resolve(message.data);
+        });
+        totalVodCount = message.data.length;
+      }
+    };
+    chrome.runtime.onMessage.addListener(listener);
+  });
+}
+
 // 사이드패널 여는 코드
 chrome.runtime.onInstalled.addListener(() => {
-  // 사용자가 확장 아이콘을 클릭할 때마다 사이드패널이 열리도록 설정
   chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }, () => {
-    console.log("Side panel behavior set: open on action click.");
+    console.log('[이코] Side panel behavior set: open on action click.');
   });
 });
 
-// 수업 아이디를 저장하고 불러오는 코드
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type === 'REQUEST_COURSE_IDS') {
-    chrome.storage.local.get('courseIds', (result) => {
-      if (result.courseIds) {
-        sendResponse({ courseIds: result.courseIds });
-      } else {
-        chrome.scripting.executeScript({
-          target: { tabId: sender.tab?.id ?? 0 },
-          files: ['content_scripts/index.js']
-        });
-        return true;
-      }
-    });
-    return true;
-  }
+interface GetCourseVodDataMsg {
+  type: 'GET_COURSE_VOD_DATA';
+}
 
-  if (message.type === 'COURSE_IDS') {
-    chrome.storage.local.set({ courseIds: message.data });
+interface CourseVodDataMsg {
+  type: 'COURSE_VOD_DATA';
+  lectures: any;
+  courseId: string; 
+  courseTitle: string;
+}
+
+type MessagePayload = GetCourseVodDataMsg | CourseVodDataMsg | any;
+
+chrome.runtime.onMessage.addListener((message: MessagePayload, sender, sendResponse) => {
+  switch (message.type) {
+    case 'GET_COURSE_VOD_DATA': {
+      console.log('[이코] 강의 VOD 데이터 요청 (전체 강의 조회)');
+      handleAllCourseVod()
+        .then(() => sendResponse({ triggered: true }))
+        .catch((err) => {
+          console.error(err);
+          sendResponse({ error: (err as Error).message });
+        });
+      return true;
+    }
+
+    case 'COURSE_VOD_DATA': {
+      const { courseId, courseTitle, fetchedAt, lectures } = message.data;
+      console.log(`[이코] ${courseTitle}(${courseId}) VOD 데이터 수신:`, lectures);
+      
+      const storageKey = `course_${courseId}_vod`;
+      chrome.storage.local.set({ [storageKey] : message.data }, () => {
+        console.log(`[이코] ${courseTitle}(${courseId}) 저장 완료: ${storageKey}`);
+      });
+      completedVodCount++;
+      completeGetTotalVodCount();
+      break;
+    }
+
+    default:
+      break;
   }
 });
+
+/**
+ * 전체 강의 목록 처리: getCourseIds → 캐시 체크 → 없으면 fetchAndParseVod 스크립트 삽입
+ */
+async function handleAllCourseVod() {
+  completedVodCount = 0;
+
+  const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+  const tabId = tabs[0]?.id;
+  if (!tabId) {
+    throw new Error('탭 ID를 찾을 수 없습니다.');
+  }
+
+  const courseList = await getCourseIds(tabId);
+  if (!courseList.length) {
+    throw new Error('강의 목록을 불러올 수 없습니다.');
+  } else {
+    totalVodCount = courseList.length;
+  }
+
+  const today = new Date().toISOString().slice(0, 10);
+
+  // 모든 코스에 대해 캐시 체크 후, 없으면 삽입
+
+  console.log(`[이코] 콘텐츠 스크립트(fetchAndParseVod) 삽입 시작`);
+  await injectContentScript(tabId, 'content_scripts/fetchAndParseVod.js');
+
+  await Promise.all(
+    courseList.map(async (course) => {
+      const storageKey = `course_${course.id}_vod`;
+      const result = await chrome.storage.local.get(storageKey);
+      const cached = result[storageKey];
+
+      if (cached && cached.fetchedAt === today) {
+        console.log(`[이코] 캐시 사용 : ${cached.courseTitle}(${course.id})`);
+        completedVodCount++;
+        completeGetTotalVodCount();
+        return;
+      }
+
+      await sendMessageToTab(tabId, {
+        type: 'PARSE_VOD_FOR_ID',
+        courseId: course.id,
+        courseTitle: course.title,
+      });
+      console.log(`[이코] PARSE_VOD_FOR_ID 요청 완료: ${cached.courseTitle}(${course.id})`);
+    }),
+  );
+}
+
+async function completeGetTotalVodCount() {
+  if (completedVodCount === totalVodCount) {
+    console.log('[이코] 전체 VOD 데이터 수집 완료');
+    const { courseIds } = await chrome.storage.local.get('courseIds');
+
+    let allVodData: CourseVodData[] = [];
+    for (const course of courseIds) {
+      const storageKey = `course_${course.id}_vod`;
+      const result = await chrome.storage.local.get({ [storageKey]: null });
+      allVodData.push(result[storageKey] ?? {});
+    }
+
+    chrome.runtime.sendMessage({ type: 'ALL_COURSE_VOD_DATA', payload: allVodData });
+  }
+}

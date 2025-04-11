@@ -1,3 +1,5 @@
+console.log('[이코] 콘텐츠 스크립트 getCourseId.js 삽입됨');
+
 const courseElements = document.querySelectorAll('.course-label-r');
 const courses = Array.from(courseElements).map(el => {
   const anchor = el.querySelector('a.course-link');
@@ -16,7 +18,11 @@ const courses = Array.from(courseElements).map(el => {
   };
 }).filter(Boolean); 
 
+console.log('[이코] 강의 목록:', courses);
+
 chrome.runtime.sendMessage({
   type: 'COURSE_IDS',
   data: courses
 });
+
+console.log('[이코] getCourseId.js에서 메시지 전송 완료');
