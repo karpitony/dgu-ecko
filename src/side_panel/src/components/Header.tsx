@@ -14,7 +14,7 @@ export default function Header({
   return (
     <header className="flex flex-row justify-between items-center">
       <button onClick={() => setCurrentPage("home")}>
-        <h1 className="text-2xl font-bold">이코</h1>
+        <h1 className="text-2xl font-bold">🐘 이코</h1>
       </button>
       <nav className="flex flex-row gap-3 text-lg text-center">
           <li>

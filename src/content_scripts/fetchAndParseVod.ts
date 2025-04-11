@@ -2,11 +2,13 @@
  * 이클래스 사이버 강의 정보를 가져오고 파싱
  */
 
+const ECLASS_VOD_URL = "https://eclass.dongguk.edu/course/view.php?id=";
+
 console.log('[이코] Content script loaded on eclass page.');
 
 async function fetchCoursePage(courseId: string): Promise<string | null> {
   try {
-    const response = await fetch(`https://eclass.dongguk.edu/course/view.php?id=${courseId}`, {
+    const response = await fetch(`${ECLASS_VOD_URL}${courseId}`, {
       method: 'GET',
       credentials: 'include',
     });
