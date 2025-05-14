@@ -20,7 +20,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="p-4 w-full h-screen overflow-y-auto flex items-start">
+    <div className="p-4 w-full h-screen overflow-y-auto flex flex-col items-start">
       <h2 className="text-xl font-bold mb-4">남은 과제</h2>
       <AssignmentList courses={assignmentData} />
     </div>
