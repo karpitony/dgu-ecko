@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { CourseVodData, VodLecture } from '@/types/courseVodData';
+import dummyData from '@/assets/dummyVod.json';
 
 /** UI 에서 바로 쓰기 좋은 형태 */
 export interface CourseWithVod {
@@ -16,11 +17,18 @@ export function useCourseVod() {
   // helper ─ 크롬 환경이 아닌 dev 서버에서 오류 방지
   const isChromeRuntime =
     typeof chrome !== 'undefined' && !!chrome.runtime?.sendMessage;
-
-  /** 최초 1개 과목만 받아오는 요청 */
+  
   useEffect(() => {
     if (!isChromeRuntime) {
       setLoading(false);
+      setCourses([
+        {
+          id: 'dummy',
+          title: 'Dummy Course',
+          professor: 'Dummy Professor',
+          lectures: dummyData.lectures,
+        },
+      ]);
       return;
     }
 
@@ -42,7 +50,9 @@ export function useCourseVod() {
 
   /** 백그라운드 → 패널 수신 */
   useEffect(() => {
-    if (!isChromeRuntime) return;
+    if (!isChromeRuntime) {
+      return ;
+    }
 
     const handleMessage = (msg: { type: string; payload: CourseVodData[] }) => {
       if (msg.type !== 'ALL_COURSE_VOD_DATA') return;

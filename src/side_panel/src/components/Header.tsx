@@ -12,26 +12,26 @@ export default function Header({
   console.log(currentPage);
   
   return (
-    <header className="flex flex-row justify-between items-center">
+    <header className="flex flex-row justify-between items-center px-2 w-full">
       <button onClick={() => setCurrentPage("home")}>
         <h1 className="text-2xl font-bold">🐘 이코</h1>
       </button>
-      <nav className="flex flex-row gap-3 text-lg text-center">
-          <li>
+      <nav className="flex flex-row gap-3 text-lg text-cente">
+          <p>
             <button onClick={() => setCurrentPage("assignment")}>
               과제
             </button>
-          </li>
-          <li>
+          </p>
+          <p>
             <button onClick={() => setCurrentPage("cyber-class")}>
               싸강
             </button>
-          </li>
-          <li>
+          </p>
+          <p>
             <button onClick={() => setCurrentPage("settings")}>
               설정
             </button>
-          </li>
+          </p>
       </nav>
     </header>
   );

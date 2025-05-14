@@ -8,9 +8,11 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState<PageList>("home");
 
   return (
-    <div className="flex flex-col itmes-center h-screen bg-[#FAF0E6	]">
-      <Header currentPage={currentPage} setCurrentPage={setCurrentPage} />
-      {currentPage === "home" && <HomePage />}
+    <div className="flex justify-center itmes-center w-full h-screen bg-gray-200">
+      <div className="flex flex-col items-center h-screen w-full max-w-lg">
+        <Header currentPage={currentPage} setCurrentPage={setCurrentPage} />
+        {currentPage === "home" && <HomePage />}
+      </div>
     </div>
   )
 }

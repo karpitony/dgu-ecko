@@ -1,63 +1,7 @@
 @import "tailwindcss";
 
-/* 브라우져 기본 CSS Reset */
-*,
-*::before,
-*::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 html {
   line-height: 1.5; /* 텍스트 가독성을 위한 기본 줄 간격 */
   font-family: Arial, sans-serif; /* 기본 폰트 설정 */
   -webkit-text-size-adjust: 100%; /* 모바일에서 텍스트 확대 방지 */
-}
-
-body {
-  margin: 0;
-}
-
-a {
-  text-decoration: none; /* 링크의 밑줄 제거 */
-  color: inherit; /* 부모의 글자색을 따름 */
-}
-
-ul,
-ol {
-  list-style: none; /* 목록의 기본 점 제거 */
-}
-
-button,
-input,
-textarea {
-  font-family: inherit; /* 부모 폰트를 상속받음 */
-  border: none;
-  background: none;
-}
-
-img,
-picture,
-video,
-canvas,
-svg {
-  display: block; /* inline 속성 제거 */
-  max-width: 100%; /* 컨테이너 크기를 벗어나지 않도록 제한 */
-  height: auto; /* 이미지 비율 유지 */
-}
-
-table {
-  border-collapse: collapse; /* 테이블 셀 간 간격 제거 */
-  border-spacing: 0;
-}
-
-@layer base {
-  ul, ol {
-    list-style: none;
-  }
-
-  li::marker {
-    content: none !important;
-  }
 }

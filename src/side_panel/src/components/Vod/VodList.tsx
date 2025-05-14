@@ -22,7 +22,7 @@ export default function CourseList({ courses }: { courses: CourseWithVod[] }) {
     );
 
   return (
-    <ul className="space-y-3">
+    <ul className="space-y-3 w-full">
       {vods.map((vod) => (
         <VodItem key={vod.vodId ?? `${vod.courseTitle}-${vod.week}`} vod={vod} />
       ))}
