@@ -23,7 +23,7 @@ export default function Header({
             </button>
           </p>
           <p>
-            <button onClick={() => setCurrentPage("cyber-class")}>
+            <button onClick={() => setCurrentPage("vod")}>
               싸강
             </button>
           </p>

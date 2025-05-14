@@ -78,6 +78,16 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === 'openSidePanel') {
+    chrome.windows.getCurrent((currentWindow) => {
+      if (currentWindow?.id !== undefined) {
+        chrome.sidePanel.open({ windowId: currentWindow.id });
+      }
+    });
+  }
+});
+
 interface GetCourseVodDataMsg {
   type: 'GET_COURSE_VOD_DATA';
 }

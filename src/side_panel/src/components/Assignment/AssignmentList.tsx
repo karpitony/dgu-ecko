@@ -2,7 +2,13 @@ import { CourseAssignmentData } from '@/types/courseAssignmentData';
 import { getDday } from '@/libs/getDday';
 import AssignmentItem from './AssignmentItem';
 
-export default function AssignmentList({ courses }: { courses: CourseAssignmentData[] }) {
+export default function AssignmentList({ 
+  courses,
+  maxShow = 0
+}: {
+  courses: CourseAssignmentData[];
+  maxShow?: number
+}) {
   const coursesWithAssignments = courses
     .flatMap((c) =>
       (c.assignments ?? []).map((assignment) => ({
@@ -12,6 +18,11 @@ export default function AssignmentList({ courses }: { courses: CourseAssignmentD
     )
     .filter((assignment) => getDday(assignment.due ?? '') >= 0)
     .sort((a, b) => getDday(a.due ?? '') - getDday(b.due ?? ''));
+
+  // 과제 목록을 최대 maxShow개만 보여줌
+  if (maxShow > 0) {
+    coursesWithAssignments.splice(maxShow);
+  }
   
   console.log('과제 목록:', coursesWithAssignments);
   console.log(courses);

@@ -20,6 +20,12 @@
   "host_permissions": [
     "https://eclass.dongguk.edu/*"
   ],
+  "content_scripts": [
+    {
+      "matches": ["https://eclass.dongguk.edu/*"],
+      "js": ["content_scripts/sidePanelButton.js"]
+    }
+  ],
   "icons": {
     "16": "assets/icons/icon16.png",
     "48": "assets/icons/icon48.png",

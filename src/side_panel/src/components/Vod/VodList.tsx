@@ -2,7 +2,13 @@ import type { CourseWithVod } from '@/hooks/useCourseVod';
 import { getDday } from '@/libs/getDday';
 import VodItem from './VodItem';
 
-export default function CourseList({ courses }: { courses: CourseWithVod[] }) {
+export default function CourseList({
+  courses,
+  maxShow = 0
+}: {
+  courses: CourseWithVod[];
+  maxShow?: number;
+}) {
   const vods = courses
     .flatMap((c) =>
       c.lectures.map((lec) => ({
@@ -13,6 +19,10 @@ export default function CourseList({ courses }: { courses: CourseWithVod[] }) {
     )
     .filter((v) => getDday(v.period.end) >= 0)
     .sort((a, b) => getDday(a.period.end) - getDday(b.period.end));
+  
+  if (maxShow > 0) {
+    vods.splice(maxShow);
+  }
 
   if (vods.length === 0)
     return (
