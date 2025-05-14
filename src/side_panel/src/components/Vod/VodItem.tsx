@@ -35,35 +35,33 @@ export default function VodItem({ vod }: VodItemProps) {
   // 클릭 시 viewerUrl 새 탭
   const handleClick = () => {
     if (vod.viewerUrl) window.open(vod.viewerUrl, '_blank');
-    if (vod.viewUrl) window.open(vod.viewUrl, '_blank');
-    alert('아직 수업이 시작되지 않았거나, 강의 시청 URL이 제공되지 않았습니다.');
+    else if (vod.viewUrl) window.open(vod.viewUrl, '_blank');
+    else alert('아직 수업이 시작되지 않았거나, 강의 시청 URL이 제공되지 않았습니다.');
   };
 
   return (
     <li
       onClick={handleClick}
       className={cn(
-        "p-4 rounded-xl border grid grid-cols-4 gap-4 items-center w-full cursor-pointer transition", 
+        "p-2 rounded-xl border grid grid-cols-4 gap-2 items-center w-full cursor-pointer transition", 
         rowStyle
       )}
     >
       {/* 아이콘 - 1칸 */}
       <div className="col-span-1 flex items-center justify-center w-full">
-        <IoPlayOutline className="flex text-2xl text-white p-1.5 pl-2 bg-[#8d8884] rounded-full w-14 h-14" />
+        <IoPlayOutline className="flex text-2xl text-white p-1.5 pl-2 bg-[#8d8884] rounded-full w-12 h-12" />
       </div>
 
       {/* 텍스트 정보 - 3칸 */}
       <div className="col-span-3 flex flex-col items-start justify-between w-full space-y-1 py-2">
-        <div className="flex items-center space-x-2">
-          <span className={`${badgeColor} text-white text-sm px-2 py-0.5 rounded-lg`}>
+        <div className="text-sm text-gray-500">
+          <span className={`${badgeColor} text-white text-xs px-2 py-0.5 rounded-lg mr-2`}>
             {ddayLabel}
           </span>
-          <div className="font-semibold text-lg">{vod.title}</div>
+          {vod.courseTitle.split('-')[0]}
         </div>
-        <div className="text text-gray-500">
-          {vod.courseTitle} · {vod.week}
-        </div>
-        <div className="text text-gray-500">
+        <h2 className="font-semibold text-base">{vod.title}</h2>
+        <div className="text-xs text-gray-500">
           {endDate.toLocaleDateString()} 까지
         </div>
       </div>

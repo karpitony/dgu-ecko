@@ -2,6 +2,8 @@ import { CourseInfo, CourseVodData } from '../types';
 
 let totalVodCount = 0;
 let completedVodCount = 0;
+let totalAssignmentCount = 0;
+let completedAssignmentCount = 0;
 
 /**
  * 주어진 JS 파일을 탭에 동적으로 삽입(inject)한다.
@@ -148,6 +150,9 @@ chrome.runtime.onMessage.addListener((message: MessagePayload, sender, sendRespo
       chrome.storage.local.set({ [storageKey]: message.data }, () => {
         console.log(`[이코] ${courseTitle}(${courseId}) 과제 저장 완료: ${storageKey}`);
       });
+
+      completedAssignmentCount++;
+      completeGetTotalAssignmentCount();
       break;
     }
 
@@ -222,6 +227,8 @@ async function completeGetTotalVodCount() {
 }
 
 async function handleAllCourseAssignments() {
+  completedAssignmentCount = 0;
+
   const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
   const tabId = tabs[0]?.id;
   if (!tabId) {
@@ -229,6 +236,8 @@ async function handleAllCourseAssignments() {
   }
 
   const courseList = await getCourseIds(tabId);
+  totalAssignmentCount = courseList.length;
+
   const today = new Date().toISOString().slice(0, 10);
 
   await injectContentScript(tabId, 'content_scripts/fetchAndParseAssignment.js');
@@ -241,6 +250,8 @@ async function handleAllCourseAssignments() {
 
       if (cached && cached.fetchedAt === today) {
         console.log(`[이코] 과제 캐시 사용: ${cached.courseTitle}(${course.id})`);
+        completedAssignmentCount++;
+        completeGetTotalAssignmentCount();
         return;
       }
 
@@ -253,3 +264,20 @@ async function handleAllCourseAssignments() {
   );
 }
 
+async function completeGetTotalAssignmentCount() {
+  if (completedAssignmentCount === totalAssignmentCount) {
+    console.log('[이코] 전체 과제 데이터 수집 완료');
+    const { courseIds } = await chrome.storage.local.get('courseIds');
+
+    let allAssignmentData: CourseAssignmentData[] = [];
+    for (const course of courseIds) {
+      const storageKey = `course_${course.id}_assignment`;
+      const result = await chrome.storage.local.get({ [storageKey]: null });
+      if (result[storageKey]) {
+        allAssignmentData.push(result[storageKey]);
+      }
+    }
+
+    chrome.runtime.sendMessage({ type: 'ALL_COURSE_ASSIGNMENT_DATA', payload: allAssignmentData });
+  }
+}

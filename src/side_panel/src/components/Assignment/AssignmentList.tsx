@@ -1,18 +1,20 @@
-import type { CourseWithAssignment } from '@/hooks/useCourseAssignment';
+import { CourseAssignmentData } from '@/types/courseAssignmentData';
 import { getDday } from '@/libs/getDday';
 import AssignmentItem from './AssignmentItem';
 
-export default function AssignmentList({ courses }: { courses: CourseWithAssignment[] }) {
+export default function AssignmentList({ courses }: { courses: CourseAssignmentData[] }) {
   const coursesWithAssignments = courses
     .flatMap((c) =>
-      c.assignments.map((assignment) => ({
+      (c.assignments ?? []).map((assignment) => ({
         ...assignment,
-        courseTitle: c.title,
-        professor: c.professor,
+        courseTitle: c.courseTitle,
       })),
     )
     .filter((assignment) => getDday(assignment.due ?? '') >= 0)
     .sort((a, b) => getDday(a.due ?? '') - getDday(b.due ?? ''));
+  
+  console.log('과제 목록:', coursesWithAssignments);
+  console.log(courses);
 
   if (coursesWithAssignments.length === 0)
     return (
@@ -24,7 +26,10 @@ export default function AssignmentList({ courses }: { courses: CourseWithAssignm
   return (
     <ul className="space-y-3 w-full">
       {coursesWithAssignments.map((assignment) => (
-        <AssignmentItem key={`${assignment.courseTitle}-${assignment.title}`} assignment={assignment} />
+        <AssignmentItem 
+          key={`${assignment.courseTitle}-${assignment.title}`}
+          assignment={assignment}
+        />
       ))}
     </ul>
   );

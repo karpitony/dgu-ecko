@@ -6,13 +6,11 @@ import AssignmentList from '@/components/Assignment/AssignmentList';
 
 export default function HomePage() {
   const { courses: vodData, loading: vodLoading } = useCourseVod();
-  const { courses: assignmentData, loading: assignmentLoading } =
-    useCourseAssignments();
+  const { courses: assignmentData, loading: assignmentLoading } = useCourseAssignments();
   
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   useEffect(() => {
-    
     if (!vodLoading && !assignmentLoading) {
       setIsDataLoaded(true);
     }
@@ -25,7 +23,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="p-4 w-full">
+    <div className="p-4 w-full h-screen overflow-y-auto">
       <h2 className="text-xl font-bold mb-4">남은 과제</h2>
       <AssignmentList courses={assignmentData} />
       <h2 className="text-xl font-bold mt-8 mb-4">남은 VOD</h2>
