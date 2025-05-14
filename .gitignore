@@ -2,6 +2,9 @@
 .env.local
 dist_ts
 
+*.crx
+*.pem
+
 # Logs
 logs
 *.log
