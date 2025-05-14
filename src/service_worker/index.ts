@@ -87,6 +87,20 @@ interface CourseVodDataMsg {
   courseTitle: string;
 }
 
+interface GetCourseAssignmentDataMsg {
+  type: 'GET_COURSE_ASSIGNMENT_DATA';
+}
+
+interface CourseAssignmentDataMsg {
+  type: 'COURSE_ASSIGNMENT_DATA';
+  data: {
+    assignments: any;
+    courseId: string;
+    courseTitle: string;
+    fetchedAt: string;
+  };
+}
+
 type MessagePayload = GetCourseVodDataMsg | CourseVodDataMsg | any;
 
 chrome.runtime.onMessage.addListener((message: MessagePayload, sender, sendResponse) => {
@@ -112,6 +126,28 @@ chrome.runtime.onMessage.addListener((message: MessagePayload, sender, sendRespo
       });
       completedVodCount++;
       completeGetTotalVodCount();
+      break;
+    }
+    
+    case 'GET_COURSE_ASSIGNMENT_DATA': {
+      console.log('[이코] 과제 데이터 요청');
+      handleAllCourseAssignments()
+        .then(() => sendResponse({ triggered: true }))
+        .catch((err) => {
+          console.error(err);
+          sendResponse({ error: (err as Error).message });
+        });
+      return true;
+    }
+
+    case 'COURSE_ASSIGNMENT_DATA': {
+      const { courseId, courseTitle, fetchedAt, assignments } = message.data;
+      console.log(`[이코] ${courseTitle}(${courseId}) 과제 데이터 수신:`, assignments);
+
+      const storageKey = `course_${courseId}_assignment`;
+      chrome.storage.local.set({ [storageKey]: message.data }, () => {
+        console.log(`[이코] ${courseTitle}(${courseId}) 과제 저장 완료: ${storageKey}`);
+      });
       break;
     }
 
@@ -184,3 +220,36 @@ async function completeGetTotalVodCount() {
     chrome.runtime.sendMessage({ type: 'ALL_COURSE_VOD_DATA', payload: allVodData });
   }
 }
+
+async function handleAllCourseAssignments() {
+  const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+  const tabId = tabs[0]?.id;
+  if (!tabId) {
+    throw new Error('탭 ID를 찾을 수 없습니다.');
+  }
+
+  const courseList = await getCourseIds(tabId);
+  const today = new Date().toISOString().slice(0, 10);
+
+  await injectContentScript(tabId, 'content_scripts/fetchAndParseAssignment.js');
+
+  await Promise.all(
+    courseList.map(async (course) => {
+      const storageKey = `course_${course.id}_assignment`;
+      const result = await chrome.storage.local.get(storageKey);
+      const cached = result[storageKey];
+
+      if (cached && cached.fetchedAt === today) {
+        console.log(`[이코] 과제 캐시 사용: ${cached.courseTitle}(${course.id})`);
+        return;
+      }
+
+      await sendMessageToTab(tabId, {
+        type: 'PARSE_ASSIGNMENT_FOR_ID',
+        courseId: course.id,
+        courseTitle: course.title,
+      });
+    })
+  );
+}
+
