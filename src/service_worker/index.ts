@@ -4,6 +4,7 @@ let totalVodCount = 0;
 let completedVodCount = 0;
 let totalAssignmentCount = 0;
 let completedAssignmentCount = 0;
+let scriptInjected = false;
 
 /**
  * 주어진 JS 파일을 탭에 동적으로 삽입(inject)한다.
@@ -51,8 +52,14 @@ export async function getCourseIds(tabId: number): Promise<CourseInfo[]> {
     return courseIds;
   }
 
-  console.log('[이코] 콘텐츠 스크립트(getCourseId) 삽입 시작');
-  await injectContentScript(tabId, 'content_scripts/getCourseId.js');
+  if (!scriptInjected) {
+    console.log('[이코] 콘텐츠 스크립트(getCourseId) 삽입 시작');
+    scriptInjected = true; // 삽입 상태 기록
+    await injectContentScript(tabId, 'content_scripts/getCourseId.js');
+  } else {
+    console.log('[이코] 콘텐츠 스크립트(getCourseId) 이미 삽입됨');
+  }
+
 
   return new Promise<CourseInfo[]>((resolve) => {
     // 메시지 대기
@@ -97,20 +104,6 @@ interface CourseVodDataMsg {
   lectures: any;
   courseId: string; 
   courseTitle: string;
-}
-
-interface GetCourseAssignmentDataMsg {
-  type: 'GET_COURSE_ASSIGNMENT_DATA';
-}
-
-interface CourseAssignmentDataMsg {
-  type: 'COURSE_ASSIGNMENT_DATA';
-  data: {
-    assignments: any;
-    courseId: string;
-    courseTitle: string;
-    fetchedAt: string;
-  };
 }
 
 type MessagePayload = GetCourseVodDataMsg | CourseVodDataMsg | any;
@@ -237,6 +230,7 @@ async function completeGetTotalVodCount() {
 }
 
 async function handleAllCourseAssignments() {
+  console.log('[이코] 과제 전체 수집 함수 진입');
   completedAssignmentCount = 0;
 
   const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -246,10 +240,15 @@ async function handleAllCourseAssignments() {
   }
 
   const courseList = await getCourseIds(tabId);
-  totalAssignmentCount = courseList.length;
+  if (!courseList.length) {
+    throw new Error('강의 목록을 불러올 수 없습니다.');
+  } else {
+    totalAssignmentCount = courseList.length;
+  }
 
   const today = new Date().toISOString().slice(0, 10);
 
+  console.log(`[이코] 콘텐츠 스크립트(fetchAndParseAssignment) 삽입 시작`);
   await injectContentScript(tabId, 'content_scripts/fetchAndParseAssignment.js');
 
   await Promise.all(
@@ -270,6 +269,7 @@ async function handleAllCourseAssignments() {
         courseId: course.id,
         courseTitle: course.title,
       });
+      console.log(`[이코] PARSE_ASSIGNMENT_FOR_ID 요청 완료: ${cached.courseTitle}(${course.id})`);
     })
   );
 }

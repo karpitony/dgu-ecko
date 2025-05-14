@@ -91,7 +91,16 @@ async function fetchAndParseAssignment(courseId: string, courseTitle: string): P
     assignments,
   };
 
-  chrome.runtime.sendMessage({ type: 'COURSE_ASSIGNMENT_DATA', data: courseAssignmentData });
+  chrome.runtime.sendMessage(
+    { type: 'COURSE_ASSIGNMENT_DATA', data: courseAssignmentData },
+    (response) => {
+      if (chrome.runtime.lastError) {
+        console.warn('[이코] ⚠️ 과제 데이터 전송 실패:', chrome.runtime.lastError.message);
+      } else {
+        console.log('[이코] 과제 데이터 전송 성공:', response);
+      }
+    }
+  );
   return assignments;
 }
 
@@ -100,7 +109,15 @@ async function fetchAndParseAssignment(courseId: string, courseTitle: string): P
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'PARSE_ASSIGNMENT_FOR_ID' && message.courseId && message.courseTitle) {
       console.log(`[이코] 과제 정보 파싱 요청: ${message.courseTitle}(${message.courseId})`);
-      fetchAndParseAssignment(message.courseId, message.courseTitle);
+      fetchAndParseAssignment(message.courseId, message.courseTitle)
+        .then(() => {
+          sendResponse({ ok: true });
+        })
+        .catch((err) => {
+          console.error('[이코] 과제 파싱 실패:', err);
+          sendResponse({ ok: false, error: err.message });
+        });
+      return true; 
     }
   });
 })();
