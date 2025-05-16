@@ -4,7 +4,7 @@ import cn from '@yeahx4/cn';
 import { IoPlayOutline } from "react-icons/io5";
 
 interface VodItemProps {
-  vod: VodLecture & { courseTitle: string; professor: string };
+  vod: VodLecture & { courseTitle: string; };
 }
 
 export default function VodItem({ vod }: VodItemProps) {

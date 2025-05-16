@@ -4,6 +4,7 @@ import { useCourseAssignments } from '@/hooks/useCourseAssignment';
 import CourseVodList from '@/components/Vod/VodList';
 import AssignmentList from '@/components/Assignment/AssignmentList';
 import type { PageList } from '@/App';
+import { LuRefreshCcw } from "react-icons/lu";
 
 export default function HomePage({
   setCurrentPage,
@@ -38,7 +39,18 @@ export default function HomePage({
           전체 과제 보기
         </button>
       </div>
+      <div className='w-full flex items-center justify-between mb-4'>
+        <p>Last update: {assignmentData[0].fetchedAt}</p>
+        <button
+          className="text-blue-500 hover:underline mb-4 text-base"
+          onClick={() => {
+          }}
+        >
+          <LuRefreshCcw />
+        </button>
+      </div>
       <AssignmentList courses={assignmentData} maxShow={4}/>
+
       <div className='flex flex-row justify-between items-center mt-8'>
         <h2 className="text-xl font-bold mb-4">남은 VOD</h2>
         <button
@@ -46,6 +58,16 @@ export default function HomePage({
           onClick={() => setCurrentPage('vod')}
         >
           전체 VOD 보기
+        </button>
+      </div>
+      <div className='w-full flex items-center justify-between mb-4'>
+        <p>Last update: {vodData[0].fetchedAt}</p>
+        <button
+          className="text-blue-500 hover:underline mb-4 text-base"
+          onClick={() => {
+          }}
+        >
+          <LuRefreshCcw />
         </button>
       </div>
       <CourseVodList courses={vodData} maxShow={4}/>

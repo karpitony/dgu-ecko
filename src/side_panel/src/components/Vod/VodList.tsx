@@ -1,4 +1,4 @@
-import type { CourseWithVod } from '@/hooks/useCourseVod';
+import { CourseVodData} from '@/types/courseVodData';
 import { getDday } from '@/libs/getDday';
 import VodItem from './VodItem';
 
@@ -6,15 +6,14 @@ export default function CourseList({
   courses,
   maxShow = 0
 }: {
-  courses: CourseWithVod[];
+  courses: CourseVodData[];
   maxShow?: number;
 }) {
   const vods = courses
     .flatMap((c) =>
       c.lectures.map((lec) => ({
         ...lec,
-        courseTitle: c.title,
-        professor: c.professor,
+        courseTitle: c.courseTitle,
       })),
     )
     .filter((v) => getDday(v.period.end) >= 0)

@@ -8,6 +8,6 @@ export interface Assignment {
 export interface CourseAssignmentData {
   courseId: string;
   courseTitle: string;
-  fetchedAt: string; // YYYY-MM-DD
+  fetchedAt: string;
   assignments: Assignment[];
 }

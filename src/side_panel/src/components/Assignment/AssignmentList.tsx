@@ -35,13 +35,15 @@ export default function AssignmentList({
     );
 
   return (
-    <ul className="space-y-3 w-full">
-      {coursesWithAssignments.map((assignment) => (
-        <AssignmentItem 
-          key={`${assignment.courseTitle}-${assignment.title}`}
-          assignment={assignment}
-        />
-      ))}
-    </ul>
+    <div className='w-full'>
+      <ul className="space-y-3 w-full">
+        {coursesWithAssignments.map((assignment) => (
+          <AssignmentItem 
+            key={`${assignment.courseTitle}-${assignment.title}`}
+            assignment={assignment}
+          />
+        ))}
+      </ul>
+    </div>
   );
 }
