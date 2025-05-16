@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useCourseVod } from '@/hooks/useCourseVod';
 import { useCourseAssignments } from '@/hooks/useCourseAssignment';
-import CourseVodList from '@/components/Vod/VodList';
-import AssignmentList from '@/components/Assignment/AssignmentList';
+import CourseVodList from '@/components/VodList';
+import AssignmentList from '@/components/AssignmentList';
 import type { PageList } from '@/App';
 import { LuRefreshCcw } from "react-icons/lu";
+import { formatDateTime } from '@/libs/formatDateTime';
 
 export default function HomePage({
   setCurrentPage,
@@ -38,42 +39,46 @@ export default function HomePage({
 
   return (
     <div className="p-4 w-full h-screen overflow-y-auto">
-      <div className='flex flex-row justify-between items-center'>
-        <h2 className="text-xl font-bold mb-4">남은 과제</h2>
+      <div className='flex flex-row justify-between items-center mb-2'>
+        <h2 className="text-xl font-bold">남은 과제</h2>
         <button
-          className="text-blue-500 hover:underline mb-4 text-base"
+          className="text-blue-500 hover:underline text-base"
           onClick={() => setCurrentPage('assignment')}
         >
           전체 과제 보기
         </button>
       </div>
-      <div className='w-full flex items-center justify-between mb-4'>
-        <p>Last update: {assignmentData[0].fetchedAt}</p>
+      <div className='w-full flex items-center justify-between h-6 mb-4'>
+        <p className='flex text-gray-500'>
+          Update: {formatDateTime(assignmentData[0]?.fetchedAt) ?? "now"}
+        </p>
         <button
-          className="text-blue-500 hover:underline mb-4 text-base"
+          className="text-blue-500 hover:underline text-base"
           onClick={() => {assignmentRefetch();}}
         >
-          <LuRefreshCcw />
+          <LuRefreshCcw className='w-4 h-4'/>
         </button>
       </div>
       <AssignmentList courses={assignmentData} maxShow={4}/>
 
-      <div className='flex flex-row justify-between items-center mt-8'>
-        <h2 className="text-xl font-bold mb-4">남은 VOD</h2>
+      <div className='flex flex-row justify-between items-center mt-8 mb-2'>
+        <h2 className="text-xl font-bold">남은 VOD</h2>
         <button
-          className="text-blue-500 hover:underline mb-4 text-base"
+          className="text-blue-500 hover:underline text-base"
           onClick={() => setCurrentPage('vod')}
         >
           전체 VOD 보기
         </button>
       </div>
       <div className='w-full flex items-center justify-between mb-4'>
-        <p>Last update: {vodData[0].fetchedAt}</p>
+        <p className='flex text-gray-500'>
+          Update: {formatDateTime(vodData[0]?.fetchedAt) ?? "now"}
+        </p>
         <button
-          className="text-blue-500 hover:underline mb-4 text-base"
+          className="text-blue-500 hover:underline text-base"
           onClick={() => {vodRefetch();}}
         >
-          <LuRefreshCcw />
+          <LuRefreshCcw className='w-4 h-4'/>
         </button>
       </div>
       <CourseVodList courses={vodData} maxShow={4}/>
