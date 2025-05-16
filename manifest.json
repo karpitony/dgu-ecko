@@ -4,7 +4,6 @@
   "name": "이코 (이클래스 도와주는 코끼리)",
   "description": "동국대학교 이클래스 보조 확장 프로그램입니다.",
   "version": "0.3.0",
-  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmPa/uudwQCshsNEQpCzWAiKEpdEg8KIvbCcigpcnUJGFj3lYpBOCfA5M9K06tfYpCwsT0GcLgQ0yOh8DXXoBGbCsCgLGJ1OIseiYcBFIP/wMK8Pk69WPVJIw8o8He6CPwm6kqvMpOtVTwW2EjhmgdBJeTwhAy7RUp2nKb08ZknOUg+fsqfgOIPQIfh1PT9ZwdOFblLQeUjnWUIhbZYeLIlcDzT3tmcCwy+X5w+8NRoEX6/2KbOkLVWcWI+9AEoY3zqUMTRwBO63ayzerpfYkA6J1k9ny3rqhWQNhB8xWeQA+WFpuaGiAiKLCEJGhcJxxxhNYfqhljOCLHbm5oUisEwIDAQAB",
   "side_panel": {
     "default_path": "side_panel/index.html"
   },
