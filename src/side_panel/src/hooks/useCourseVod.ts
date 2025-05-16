@@ -1,19 +1,47 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import type { CourseVodData } from '@/types/courseVodData';
 import dummyData from '@/assets/dummyVod.json';
-
 
 export function useCourseVod() {
   const [courses, setCourses] = useState<CourseVodData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // helper ─ 크롬 환경이 아닌 dev 서버에서 오류 방지
   const isChromeRuntime =
     typeof chrome !== 'undefined' && !!chrome.runtime?.sendMessage;
-  
+
+  // 공통 fetch 함수
+  const fetchVodData = useCallback((forceRefresh = false) => {
+    if (!isChromeRuntime) return;
+
+    setLoading(true);
+    setError(null);
+
+    chrome.runtime.sendMessage(
+      { type: 'GET_COURSE_VOD_DATA', forceRefresh },
+      (res) => {
+        const vodData: CourseVodData | undefined = res?.data;
+        if (!vodData) {
+          setError('데이터를 불러오지 못했습니다.');
+          setLoading(false);
+          return;
+        }
+
+        setCourses([
+          {
+            courseId: vodData.courseId,
+            courseTitle: vodData.courseTitle,
+            fetchedAt: vodData.fetchedAt,
+            lectures: vodData.lectures ?? [],
+          },
+        ]);
+        setLoading(false);
+      }
+    );
+  }, [isChromeRuntime]);
+
   useEffect(() => {
     if (!isChromeRuntime) {
-      setLoading(false);
       setCourses([
         {
           courseId: 'dummy',
@@ -22,30 +50,15 @@ export function useCourseVod() {
           lectures: dummyData.lectures,
         },
       ]);
+      setLoading(false);
       return;
     }
 
-    chrome.runtime.sendMessage({ type: 'GET_COURSE_VOD_DATA' }, (res) => {
-      const vodData: CourseVodData | undefined = res?.data;
-      if (!vodData) return;
+    fetchVodData(false); // 캐시 허용
+  }, [fetchVodData, isChromeRuntime]);
 
-      setCourses([
-        {
-          courseId: vodData.courseId,
-          courseTitle: vodData.courseTitle,
-          fetchedAt: vodData.fetchedAt,
-          lectures: vodData.lectures ?? [],
-        },
-      ]);
-      setLoading(false);
-    });
-  }, [isChromeRuntime]);
-
-  /** 백그라운드 → 패널 수신 */
   useEffect(() => {
-    if (!isChromeRuntime) {
-      return ;
-    }
+    if (!isChromeRuntime) return;
 
     const handleMessage = (msg: { type: string; payload: CourseVodData[] }) => {
       if (msg.type !== 'ALL_COURSE_VOD_DATA') return;
@@ -64,5 +77,9 @@ export function useCourseVod() {
     return () => chrome.runtime.onMessage.removeListener(handleMessage);
   }, [isChromeRuntime]);
 
-  return { courses, loading };
+  const refetch = useCallback(() => {
+    fetchVodData(true); // 강제 새로고침
+  }, [fetchVodData]);
+
+  return { courses, loading, error, refetch };
 }

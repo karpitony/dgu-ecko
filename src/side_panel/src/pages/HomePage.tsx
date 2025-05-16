@@ -11,8 +11,16 @@ export default function HomePage({
 }: {
   setCurrentPage: (currentPage: PageList) => void;
 }) {
-  const { courses: vodData, loading: vodLoading } = useCourseVod();
-  const { courses: assignmentData, loading: assignmentLoading } = useCourseAssignments();
+  const { 
+    courses: vodData,
+    loading: vodLoading,
+    refetch: vodRefetch
+  } = useCourseVod();
+  const { 
+    courses: assignmentData,
+    loading: assignmentLoading,
+    refetch: assignmentRefetch
+  } = useCourseAssignments();
   
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
@@ -43,8 +51,7 @@ export default function HomePage({
         <p>Last update: {assignmentData[0].fetchedAt}</p>
         <button
           className="text-blue-500 hover:underline mb-4 text-base"
-          onClick={() => {
-          }}
+          onClick={() => {assignmentRefetch();}}
         >
           <LuRefreshCcw />
         </button>
@@ -64,8 +71,7 @@ export default function HomePage({
         <p>Last update: {vodData[0].fetchedAt}</p>
         <button
           className="text-blue-500 hover:underline mb-4 text-base"
-          onClick={() => {
-          }}
+          onClick={() => {vodRefetch();}}
         >
           <LuRefreshCcw />
         </button>
