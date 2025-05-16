@@ -47,7 +47,7 @@ function sendMessageToTab(tabId: number, message: any) {
  */
 export async function getCourseIds(tabId: number): Promise<CourseInfo[]> {
   const { courseIds } = await chrome.storage.local.get('courseIds');
-  if (courseIds) {
+  if (courseIds?.length) {
     console.log('[이코] 스토리지에서 courseIds 불러옴');
     return courseIds;
   }
