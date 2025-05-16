@@ -83,7 +83,7 @@ async function fetchAndParseVod(courseId: string, courseTitle: string): Promise<
   const courseVodData:CourseVodData = {
     courseId,
     courseTitle,
-    fetchedAt: new Date().toISOString().slice(0, 10), // YYYY-MM-DD
+    fetchedAt: new Date().toISOString(),
     lectures,
   }
   chrome.runtime.sendMessage({ type: 'COURSE_VOD_DATA', data: courseVodData });

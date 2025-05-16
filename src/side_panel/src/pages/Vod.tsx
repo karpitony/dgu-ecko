@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useCourseVod } from '@/hooks/useCourseVod';
-import CourseVodList from '@/components/Vod/VodList';
+import CourseVodList from '@/components/VodList';
 
 export default function Vod() {
   const { courses: vodData, loading: vodLoading } = useCourseVod();

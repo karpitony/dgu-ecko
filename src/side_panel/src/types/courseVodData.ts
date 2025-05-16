@@ -18,13 +18,3 @@ export interface CourseVodData {
   fetchedAt: string;
   lectures: VodLecture[];
 }
-
-export interface CourseInfo {
-  id: string;
-  title: string;
-  professor: string;
-}
-
-export type CourseWithVod = CourseInfo & {
-  lectures: VodLecture[];
-};

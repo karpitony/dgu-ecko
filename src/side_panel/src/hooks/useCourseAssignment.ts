@@ -1,47 +1,38 @@
-import { useEffect, useState } from 'react';
-// import dummyAssignment from '@/assets/dummyAssignment.json';
-import type { Assignment, CourseAssignmentData } from '@/types/courseAssignmentData';
+import { useEffect, useState, useCallback } from 'react';
+import type { CourseAssignmentData } from '@/types/courseAssignmentData';
 
 export function useCourseAssignments() {
   const [courses, setCourses] = useState<CourseAssignmentData[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const [error, setError] = useState<string | null>(null);
   const isChromeRuntime =
     typeof chrome !== 'undefined' && !!chrome.runtime?.sendMessage;
 
-  useEffect(() => {
-    if (!isChromeRuntime) {
-      // setCourses([
-      //   {
-      //     id: 'dummy',
-      //     title: 'Dummy Course',
-      //     professor: 'Dummy Professor',
-      //     assignments: dummyAssignment.assignments,
-      //   },
-      // ]);
-      // setLoading(false);
-      return;
-    }
+  const fetchAssignments = useCallback((forceRefresh = false) => {
+    if (!isChromeRuntime) return;
 
-    chrome.runtime.sendMessage({ type: 'GET_COURSE_ASSIGNMENT_DATA' }, (res) => {
+    setLoading(true);
+    setError(null);
+
+    chrome.runtime.sendMessage({ type: 'GET_COURSE_ASSIGNMENT_DATA', forceRefresh }, (res) => {
       if (res?.error) {
         console.error('백그라운드 요청 오류:', res.error);
+        setError(res.error);
         setLoading(false);
       }
     });
   }, [isChromeRuntime]);
 
   useEffect(() => {
+    fetchAssignments(false); // 최초 요청 시 캐시 사용
+  }, [fetchAssignments]);
+
+  useEffect(() => {
     if (!isChromeRuntime) return;
 
     const handleMessage = (msg: {
       type: string;
-      payload: {
-        courseId: string;
-        courseTitle: string;
-        fetchedAt: string;
-        assignments: Assignment[];
-      }[];
+      payload: CourseAssignmentData[];
     }) => {
       if (msg.type !== 'ALL_COURSE_ASSIGNMENT_DATA') return;
       setCourses(msg.payload);
@@ -52,5 +43,9 @@ export function useCourseAssignments() {
     return () => chrome.runtime.onMessage.removeListener(handleMessage);
   }, [isChromeRuntime]);
 
-  return { courses, loading };
+  const refetch = useCallback(() => {
+    fetchAssignments(true); // 강제 새로고침
+  }, [fetchAssignments]);
+
+  return { courses, loading, error, refetch };
 }

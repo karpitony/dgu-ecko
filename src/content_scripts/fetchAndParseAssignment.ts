@@ -87,7 +87,7 @@ async function fetchAndParseAssignment(courseId: string, courseTitle: string): P
   const courseAssignmentData: CourseAssignmentData = {
     courseId,
     courseTitle,
-    fetchedAt: new Date().toISOString().slice(0, 10),
+    fetchedAt: new Date().toISOString(),
     assignments,
   };
 

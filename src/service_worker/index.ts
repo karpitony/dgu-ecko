@@ -6,6 +6,9 @@ let totalAssignmentCount = 0;
 let completedAssignmentCount = 0;
 let scriptInjected = false;
 
+const MAX_CACHE_AGE_MS = 1000 * 60 * 60 * 4; // 4시간
+const now = new Date();
+
 /**
  * 주어진 JS 파일을 탭에 동적으로 삽입(inject)한다.
  */
@@ -97,6 +100,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 interface GetCourseVodDataMsg {
   type: 'GET_COURSE_VOD_DATA';
+  forceRefresh?: boolean;
 }
 
 interface CourseVodDataMsg {
@@ -112,7 +116,7 @@ chrome.runtime.onMessage.addListener((message: MessagePayload, sender, sendRespo
   switch (message.type) {
     case 'GET_COURSE_VOD_DATA': {
       console.log('[이코] 강의 VOD 데이터 요청 (전체 강의 조회)');
-      handleAllCourseVod()
+      handleAllCourseVod(message?.forceRefresh)
         .then(() => sendResponse({ triggered: true }))
         .catch((err) => {
           console.error(err);
@@ -136,7 +140,7 @@ chrome.runtime.onMessage.addListener((message: MessagePayload, sender, sendRespo
     
     case 'GET_COURSE_ASSIGNMENT_DATA': {
       console.log('[이코] 과제 데이터 요청');
-      handleAllCourseAssignments()
+      handleAllCourseAssignments(message?.forceRefresh)
         .then(() => sendResponse({ triggered: true }))
         .catch((err) => {
           console.error(err);
@@ -164,10 +168,9 @@ chrome.runtime.onMessage.addListener((message: MessagePayload, sender, sendRespo
   }
 });
 
-/**
- * 전체 강의 목록 처리: getCourseIds → 캐시 체크 → 없으면 fetchAndParseVod 스크립트 삽입
- */
-async function handleAllCourseVod() {
+async function handleAllCourseVod(
+  forceRefresh = false
+) {
   completedVodCount = 0;
 
   const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -183,8 +186,6 @@ async function handleAllCourseVod() {
     totalVodCount = courseList.length;
   }
 
-  const today = new Date().toISOString().slice(0, 10);
-
   // 모든 코스에 대해 캐시 체크 후, 없으면 삽입
 
   console.log(`[이코] 콘텐츠 스크립트(fetchAndParseVod) 삽입 시작`);
@@ -195,9 +196,13 @@ async function handleAllCourseVod() {
       const storageKey = `course_${course.id}_vod`;
       const result = await chrome.storage.local.get(storageKey);
       const cached = result[storageKey];
+      const isCacheValid =
+        cached &&
+        cached.fetchedAt &&
+        now.getTime() - new Date(cached.fetchedAt).getTime() < MAX_CACHE_AGE_MS;
 
-      if (cached && cached.fetchedAt === today) {
-        console.log(`[이코] 캐시 사용 : ${cached.courseTitle}(${course.id})`);
+      if (!forceRefresh && isCacheValid) {
+        console.log(`[이코] 캐시 사용 : ${course.title}(${course.id})`);
         completedVodCount++;
         completeGetTotalVodCount();
         return;
@@ -208,7 +213,7 @@ async function handleAllCourseVod() {
         courseId: course.id,
         courseTitle: course.title,
       });
-      console.log(`[이코] PARSE_VOD_FOR_ID 요청 완료: ${cached.courseTitle}(${course.id})`);
+      console.log(`[이코] PARSE_VOD_FOR_ID 요청 완료: ${course.title}(${course.id})`);
     }),
   );
 }
@@ -229,7 +234,9 @@ async function completeGetTotalVodCount() {
   }
 }
 
-async function handleAllCourseAssignments() {
+async function handleAllCourseAssignments(
+  forceRefresh = false
+) {
   console.log('[이코] 과제 전체 수집 함수 진입');
   completedAssignmentCount = 0;
 
@@ -246,8 +253,6 @@ async function handleAllCourseAssignments() {
     totalAssignmentCount = courseList.length;
   }
 
-  const today = new Date().toISOString().slice(0, 10);
-
   console.log(`[이코] 콘텐츠 스크립트(fetchAndParseAssignment) 삽입 시작`);
   await injectContentScript(tabId, 'content_scripts/fetchAndParseAssignment.js');
 
@@ -256,9 +261,13 @@ async function handleAllCourseAssignments() {
       const storageKey = `course_${course.id}_assignment`;
       const result = await chrome.storage.local.get(storageKey);
       const cached = result[storageKey];
+      const isCacheValid =
+        cached &&
+        cached.fetchedAt &&
+        now.getTime() - new Date(cached.fetchedAt).getTime() < MAX_CACHE_AGE_MS;
 
-      if (cached && cached.fetchedAt === today) {
-        console.log(`[이코] 과제 캐시 사용: ${cached.courseTitle}(${course.id})`);
+      if (!forceRefresh && isCacheValid) {
+        console.log(`[이코] 과제 캐시 사용: ${course.title}(${course.id})`);
         completedAssignmentCount++;
         completeGetTotalAssignmentCount();
         return;
@@ -269,7 +278,7 @@ async function handleAllCourseAssignments() {
         courseId: course.id,
         courseTitle: course.title,
       });
-      console.log(`[이코] PARSE_ASSIGNMENT_FOR_ID 요청 완료: ${cached.courseTitle}(${course.id})`);
+      console.log(`[이코] PARSE_ASSIGNMENT_FOR_ID 요청 완료: ${course.title}(${course.id})`);
     })
   );
 }

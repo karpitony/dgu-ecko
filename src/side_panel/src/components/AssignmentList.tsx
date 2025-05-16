@@ -1,6 +1,7 @@
 import { CourseAssignmentData } from '@/types/courseAssignmentData';
 import { getDday } from '@/libs/getDday';
-import AssignmentItem from './AssignmentItem';
+import CourseItem from '@/components/common/CourseItem';
+import { IoDocumentTextOutline } from 'react-icons/io5';
 
 export default function AssignmentList({ 
   courses,
@@ -35,13 +36,27 @@ export default function AssignmentList({
     );
 
   return (
-    <ul className="space-y-3 w-full">
-      {coursesWithAssignments.map((assignment) => (
-        <AssignmentItem 
-          key={`${assignment.courseTitle}-${assignment.title}`}
-          assignment={assignment}
-        />
-      ))}
-    </ul>
+    <div className='w-full'>
+      <ul className="space-y-3 w-full">
+        {coursesWithAssignments.map((a) => (
+          <CourseItem
+            key={`${a.courseTitle}-${a.title}`}
+            icon={
+              <IoDocumentTextOutline 
+                className="text-2xl text-white p-1.5 pl-2 bg-[#8d8884] rounded-full w-12 h-12"
+                />
+              }
+            title={a.title}
+            courseTitle={a.courseTitle}
+            due={a.due ?? ''}
+            completed={a.status === '제출 완료'}
+            onClick={() => {
+              if (a.url) window.open(a.url, '_blank');
+              else alert('아직 과제 정보가 제공되지 않았습니다.');
+            }}
+          />
+        ))}
+      </ul>
+    </div>
   );
 }
