@@ -11,16 +11,36 @@
     "build:side_panel": "cd src/side_panel && npm run build",
     "build:ts": "tsc --outDir dist_ts",
     "merge-dist": "tsx merge-dist.ts",
-    "build": "npm run build:side_panel && npm run build:ts && npm run merge-dist"
+    "build": "npm run build:side_panel && npm run build:ts && npm run merge-dist",
+    "dev:vite": "vite",
+    "build:vite": "tsc -b && vite build",
+    "lint:vite": "eslint .",
+    "preview:vite": "vite preview"
+  },
+  "dependencies": {
+    "fs-extra": "^11.3.0",
+    "@yeahx4/cn": "^1.0.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-icons": "^5.5.0"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.310",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^22.13.13",
     "tsx": "^4.19.3",
-    "typescript": "^4.9.5"
-  },
-  "dependencies": {
-    "fs-extra": "^11.3.0"
+    "@eslint/js": "^9.17.0",
+    "@tailwindcss/vite": "^4.0.2",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react-swc": "^3.5.0",
+    "eslint": "^9.17.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.16",
+    "globals": "^15.14.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "~5.6.2",
+    "typescript-eslint": "^8.18.2",
+    "vite": "^6.0.5"
   }
 }
