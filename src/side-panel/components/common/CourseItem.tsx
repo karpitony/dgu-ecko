@@ -1,4 +1,4 @@
-import { getDday } from "@/libs/getDday";
+import { getDday } from "@/side-panel/libs/getDday";
 import cn from "@yeahx4/cn";
 
 interface CourseItemCardProps {

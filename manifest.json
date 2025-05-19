@@ -5,7 +5,7 @@
   "description": "동국대학교 이클래스 보조 확장 프로그램입니다.",
   "version": "0.3.0",
   "side_panel": {
-    "default_path": "side-panel/index.html"
+    "default_path": "index.html"
   },
   "background": {
     "service_worker": "service-worker/index.js",
