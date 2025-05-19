@@ -4,11 +4,35 @@ let totalVodCount = 0;
 let completedVodCount = 0;
 let totalAssignmentCount = 0;
 let completedAssignmentCount = 0;
-let scriptInjected = false;
 
 const MAX_CACHE_AGE_MS = 1000 * 60 * 60 * 4; // 4시간
 const now = new Date();
 
+/**
+ * 콘텐츠 스크립트 삽입 여부 판단하는 함수
+ * 콘텐츠 스크립트들은 삽입 시 투명 마커 태그를 만듬
+ */ 
+function hasContentScript(tabId: number, markerId: string): Promise<boolean> {
+  const MARKER_TEMPLATE = `_ekco_marker_${markerId}`;
+  return new Promise((resolve) => {
+    chrome.scripting.executeScript(
+      {
+        target: { tabId },
+        func: (id: string) => {
+          return !!document.getElementById(id);
+        },
+        args: [MARKER_TEMPLATE],
+      },
+      (results) => {
+        if (chrome.runtime.lastError || !results?.[0]?.result) {
+          resolve(false);
+        } else {
+          resolve(true);
+        }
+      }
+    );
+  });
+}
 /**
  * 주어진 JS 파일을 탭에 동적으로 삽입(inject)한다.
  */
@@ -55,9 +79,8 @@ export async function getCourseIds(tabId: number): Promise<CourseInfo[]> {
     return courseIds;
   }
 
-  if (!scriptInjected) {
+  if (!await hasContentScript(tabId, 'getCourseId')) {
     console.log('[이코] 콘텐츠 스크립트(getCourseId) 삽입 시작');
-    scriptInjected = true; // 삽입 상태 기록
     await injectContentScript(tabId, 'content_scripts/getCourseId.js');
   } else {
     console.log('[이코] 콘텐츠 스크립트(getCourseId) 이미 삽입됨');

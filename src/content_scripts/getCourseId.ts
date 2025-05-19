@@ -1,5 +1,14 @@
 console.log('[이코] 콘텐츠 스크립트 getCourseId.js 삽입됨');
 
+if (!document.getElementById('_ekco_marker_getCourseId')) {
+  const marker = document.createElement('meta');
+  marker.id = '_ekco_marker_getCourseId';
+  marker.name = '_ekco_marker_getCourseId';
+  marker.content = '_ekco_marker_getCourseId';
+  marker.style.display = 'none';
+  document.documentElement.appendChild(marker);
+}
+
 const courseElements = document.querySelectorAll('.course-label-r');
 const courses = Array.from(courseElements).map(el => {
   const anchor = el.querySelector('a.course-link');
