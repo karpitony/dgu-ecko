@@ -1,8 +1,8 @@
 import { useState } from "react"
-import Header from "@/side_panel/components/Header";
-import HomePage from "@/side_panel/pages/HomePage";
-import Assignment from "@/side_panel/pages/Assignment";
-import Vod from "@/side_panel/pages/Vod";
+import Header from "@/side-panel/components/Header";
+import HomePage from "@/side-panel/pages/HomePage";
+import Assignment from "@/side-panel/pages/Assignment";
+import Vod from "@/side-panel/pages/Vod";
 
 export type PageList = "home" | "assignment" | "vod" |"settings";
 

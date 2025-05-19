@@ -1,6 +1,6 @@
-import { CourseAssignmentData } from '@/types/courseAssignmentData';
-import { getDday } from '@/libs/getDday';
-import CourseItem from '@/components/common/CourseItem';
+import { CourseAssignmentData } from '@/side-panel/types/courseAssignmentData';
+import { getDday } from '@/side-panel/libs/getDday';
+import CourseItem from '@/side-panel/components/common/CourseItem';
 import { IoDocumentTextOutline } from 'react-icons/io5';
 
 export default function AssignmentList({ 

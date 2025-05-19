@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import type { CourseAssignmentData } from '@/types/courseAssignmentData';
+import type { CourseAssignmentData } from '@/side-panel/types/courseAssignmentData';
 
 export function useCourseAssignments() {
   const [courses, setCourses] = useState<CourseAssignmentData[]>([]);

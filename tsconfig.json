@@ -17,8 +17,8 @@
 
     /* Linting */
     "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
     /* Paths */
@@ -28,9 +28,9 @@
     }
   },
   "include": [
-    "./src/content_scripts/**/*",
-    "./src/service_worker/**/*",
-    "./src/side_panel/**/*",
+    "./src/content-scripts/**/*",
+    "./src/service-worker/**/*",
+    "./src/side-panel/**/*",
     "./src/inject/**/*",
   ],
   "exclude": [

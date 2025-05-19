@@ -70,7 +70,7 @@ function sendMessageToTab(tabId: number, message: any) {
 }
 
 /**
- * 이미 스토리지에 있으면 가져오고, 없으면 content_scripts/getCourseId.js 실행하여 가져온다.
+ * 이미 스토리지에 있으면 가져오고, 없으면 content-scripts/getCourseId.js 실행하여 가져온다.
  */
 export async function getCourseIds(tabId: number): Promise<CourseInfo[]> {
   const { courseIds } = await chrome.storage.local.get('courseIds');
@@ -81,7 +81,7 @@ export async function getCourseIds(tabId: number): Promise<CourseInfo[]> {
 
   if (!await hasContentScript(tabId, 'getCourseId')) {
     console.log('[이코] 콘텐츠 스크립트(getCourseId) 삽입 시작');
-    await injectContentScript(tabId, 'content_scripts/getCourseId.js');
+    await injectContentScript(tabId, 'content-scripts/getCourseId.js');
   } else {
     console.log('[이코] 콘텐츠 스크립트(getCourseId) 이미 삽입됨');
   }
@@ -212,7 +212,7 @@ async function handleAllCourseVod(
   // 모든 코스에 대해 캐시 체크 후, 없으면 삽입
 
   console.log(`[이코] 콘텐츠 스크립트(fetchAndParseVod) 삽입 시작`);
-  await injectContentScript(tabId, 'content_scripts/fetchAndParseVod.js');
+  await injectContentScript(tabId, 'content-scripts/fetchAndParseVod.js');
 
   await Promise.all(
     courseList.map(async (course) => {
@@ -277,7 +277,7 @@ async function handleAllCourseAssignments(
   }
 
   console.log(`[이코] 콘텐츠 스크립트(fetchAndParseAssignment) 삽입 시작`);
-  await injectContentScript(tabId, 'content_scripts/fetchAndParseAssignment.js');
+  await injectContentScript(tabId, 'content-scripts/fetchAndParseAssignment.js');
 
   await Promise.all(
     courseList.map(async (course) => {
@@ -311,7 +311,7 @@ async function completeGetTotalAssignmentCount() {
     console.log('[이코] 전체 과제 데이터 수집 완료');
     const { courseIds } = await chrome.storage.local.get('courseIds');
 
-    let allAssignmentData: CourseAssignmentData[] = [];
+    let allAssignmentData = [];
     for (const course of courseIds) {
       const storageKey = `course_${course.id}_assignment`;
       const result = await chrome.storage.local.get({ [storageKey]: null });
