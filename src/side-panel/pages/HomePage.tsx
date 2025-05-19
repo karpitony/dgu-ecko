@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useCourseVod } from '@/hooks/useCourseVod';
-import { useCourseAssignments } from '@/hooks/useCourseAssignment';
-import CourseVodList from '@/components/VodList';
-import AssignmentList from '@/components/AssignmentList';
-import type { PageList } from '@/App';
+import { useCourseVod } from '@/side-panel/hooks/useCourseVod';
+import { useCourseAssignments } from '@/side-panel/hooks/useCourseAssignment';
+import CourseVodList from '@/side-panel/components/VodList';
+import AssignmentList from '@/side-panel/components/AssignmentList';
+import type { PageList } from '@/side-panel/App';
 import { LuRefreshCcw } from "react-icons/lu";
-import { formatDateTime } from '@/libs/formatDateTime';
+import { formatDateTime } from '@/side-panel/libs/formatDateTime';
 
 export default function HomePage({
   setCurrentPage,

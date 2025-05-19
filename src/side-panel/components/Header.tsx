@@ -1,4 +1,4 @@
-import { PageList } from "@/App";
+import { PageList } from "@/side-panel/App";
 
 interface HeaderProps {
   currentPage: PageList;
