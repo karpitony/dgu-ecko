@@ -72,37 +72,49 @@ function sendMessageToTab(tabId: number, message: any) {
 /**
  * 이미 스토리지에 있으면 가져오고, 없으면 content-scripts/getCourseId.js 실행하여 가져온다.
  */
+let courseIdsPromise: Promise<CourseInfo[]> | null = null;
+// 이걸로 courseIdsPromise를 캐싱하는 용도 -> 중복 삽입 방지
+// 다만 언제 캐싱이 무효화 되는지는 암묵적...
+
 export async function getCourseIds(tabId: number): Promise<CourseInfo[]> {
-  const { courseIds } = await chrome.storage.local.get('courseIds');
-  if (courseIds?.length) {
-    console.log('[이코] 스토리지에서 courseIds 불러옴');
-    return courseIds;
+  if (courseIdsPromise) {
+    return courseIdsPromise;
   }
 
-  if (!await hasContentScript(tabId, 'getCourseId')) {
-    console.log('[이코] 콘텐츠 스크립트(getCourseId) 삽입 시작');
-    await injectContentScript(tabId, 'content-scripts/getCourseId.js');
-  } else {
-    console.log('[이코] 콘텐츠 스크립트(getCourseId) 이미 삽입됨');
-  }
+  courseIdsPromise = (async () => {
+    const { courseIds } = await chrome.storage.local.get('courseIds');
+    if (courseIds?.length) {
+      console.log('[이코] 스토리지에서 courseIds 불러옴');
+      return courseIds;
+    }
 
+    if (!await hasContentScript(tabId, 'getCourseId')) {
+      console.log('[이코] 콘텐츠 스크립트(getCourseId) 삽입 시작');
+      await injectContentScript(tabId, 'content-scripts/getCourseId.js');
+    } else {
+      console.log('[이코] 콘텐츠 스크립트(getCourseId) 이미 삽입됨');
+    }
 
-  return new Promise<CourseInfo[]>((resolve) => {
-    // 메시지 대기
-    const listener = (message: any) => {
-      if (message.type === 'COURSE_IDS') {
-        chrome.runtime.onMessage.removeListener(listener);
-        console.log('[이코] 수신된 courseIds:', message.data);
+    return new Promise<CourseInfo[]>((resolve) => {
+      const listener = (message: any) => {
+        if (message.type === 'COURSE_IDS') {
+          chrome.runtime.onMessage.removeListener(listener);
+          console.log('[이코] 수신된 courseIds:', message.data);
 
-        chrome.storage.local.set({ courseIds: message.data }, () => {
-          resolve(message.data);
-        });
-        totalVodCount = message.data.length;
-      }
-    };
-    chrome.runtime.onMessage.addListener(listener);
-  });
+          chrome.storage.local.set({ courseIds: message.data }, () => {
+            resolve(message.data);
+            courseIdsPromise = null;  // 초기화해서 다음 호출 가능하게
+          });
+          totalVodCount = message.data.length;
+        }
+      };
+      chrome.runtime.onMessage.addListener(listener);
+    });
+  })();
+
+  return courseIdsPromise;
 }
+
 
 // 사이드패널 여는 코드
 chrome.runtime.onInstalled.addListener(() => {
@@ -158,7 +170,7 @@ chrome.runtime.onMessage.addListener((message: MessagePayload, sender, sendRespo
       });
       completedVodCount++;
       completeGetTotalVodCount();
-      break;
+      return true;
     }
     
     case 'GET_COURSE_ASSIGNMENT_DATA': {
@@ -183,7 +195,7 @@ chrome.runtime.onMessage.addListener((message: MessagePayload, sender, sendRespo
 
       completedAssignmentCount++;
       completeGetTotalAssignmentCount();
-      break;
+      return true;
     }
 
     default:
