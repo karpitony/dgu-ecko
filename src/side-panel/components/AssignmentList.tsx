@@ -3,6 +3,15 @@ import { getDday } from '@/side-panel/libs/getDday';
 import CourseItem from '@/side-panel/components/common/CourseItem';
 import { IoDocumentTextOutline } from 'react-icons/io5';
 
+function parseDatetime(datetimeStr: string | null): string | null {
+  if (!datetimeStr || datetimeStr === '-') return null;
+  const isoLikeStr = datetimeStr.replace(/\//g, '-').replace(' ', 'T');
+  const date = new Date(isoLikeStr);
+
+  return isNaN(date.getTime()) ? null : date.toISOString();
+}
+
+
 export default function AssignmentList({ 
   courses,
   maxShow = 0
@@ -17,8 +26,8 @@ export default function AssignmentList({
         courseTitle: c.courseTitle,
       })),
     )
-    .filter((assignment) => getDday(assignment.due ?? '') >= 0)
-    .sort((a, b) => getDday(a.due ?? '') - getDday(b.due ?? ''));
+    .filter((assignment) => getDday(parseDatetime(assignment.due) ?? '') >= 0)
+    .sort((a, b) => getDday(parseDatetime(a.due) ?? '') - getDday(parseDatetime(b.due) ?? ''));
 
   // 과제 목록을 최대 maxShow개만 보여줌
   if (maxShow > 0) {
@@ -48,7 +57,7 @@ export default function AssignmentList({
               }
             title={a.title}
             courseTitle={a.courseTitle}
-            due={a.due ?? ''}
+            due={parseDatetime(a.due) ?? ''}
             completed={a.status === '제출 완료'}
             onClick={() => {
               if (a.url) window.open(a.url, '_blank');

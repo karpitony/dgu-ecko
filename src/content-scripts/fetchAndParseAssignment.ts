@@ -41,40 +41,40 @@ interface CourseAssignmentData {
   }
 
   function parseAssignmentsFromHtml(html: string): Assignment[] {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
 
-    const tableRows = doc.querySelectorAll('table.generaltable tbody tr');
-    if (tableRows.length === 0) {
-      console.warn('[이코] ⚠️ 과제 항목을 찾을 수 없습니다.');
-      return [];
-    }
-
-    const assignments: Assignment[] = [];
-
-    for (const row of tableRows) {
-      // 구분선 row는 건너뛴다
-      if (row.querySelector('.tabledivider')) continue;
-
-      const titleAnchor = row.querySelector('td.c1 a');
-      const title = titleAnchor?.textContent?.trim() ?? '';
-      const url = titleAnchor?.getAttribute('href') ?? '';
-
-      const dueRaw = row.querySelector('td.c2')?.textContent?.trim() ?? '';
-      const due = dueRaw === '-' ? null : dueRaw;
-
-      const status = row.querySelector('td.c3')?.textContent?.trim() ?? '제출 정보 없음';
-
-      assignments.push({
-        title,
-        url,
-        due,
-        status,
-      });
-    }
-
-    return assignments;
+  const tableRows = doc.querySelectorAll('table.generaltable tbody tr');
+  if (tableRows.length === 0) {
+    console.warn('[이코] ⚠️ 과제 항목을 찾을 수 없습니다.');
+    return [];
   }
+
+  const assignments: Assignment[] = [];
+
+  for (const row of tableRows) {
+    const tds = row.querySelectorAll('td');
+    if (tds.length < 7) continue;
+
+    const titleAnchor = tds[4].querySelector('a');
+    const title = titleAnchor?.textContent?.trim() ?? '';
+    const url = titleAnchor?.getAttribute('href') ?? '';
+
+    const dueRaw = tds[5].textContent?.trim() ?? '';
+    const due = dueRaw === '-' ? null : dueRaw;
+
+    const status = tds[6].textContent?.trim() ?? '제출 정보 없음';
+
+    if (!title || !url) {
+      console.warn('[이코] ⚠️ 과제 제목 또는 URL 누락 - 무시됨:', { title, url });
+      continue;
+    }
+
+    assignments.push({ title, url, due, status });
+  }
+
+  return assignments;
+}
 
 
   async function fetchAndParseAssignment(courseId: string, courseTitle: string): Promise<Assignment[] | null> {
