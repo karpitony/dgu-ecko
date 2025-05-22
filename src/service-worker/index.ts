@@ -83,33 +83,48 @@ export async function getCourseIds(tabId: number): Promise<CourseInfo[]> {
 
   courseIdsPromise = (async () => {
     const { courseIds } = await chrome.storage.local.get('courseIds');
-    if (courseIds?.length) {
-      console.log('[이코] 스토리지에서 courseIds 불러옴');
-      return courseIds;
-    }
+    if (!courseIds || courseIds.length === 0) {
+      console.warn('[이코] courseIds가 비어있음 → 캐시 무효화 후 재시도');
 
-    if (!await hasContentScript(tabId, 'getCourseId')) {
-      console.log('[이코] 콘텐츠 스크립트(getCourseId) 삽입 시작');
-      await injectContentScript(tabId, 'content-scripts/getCourseId.js');
-    } else {
-      console.log('[이코] 콘텐츠 스크립트(getCourseId) 이미 삽입됨');
-    }
+      // 캐시 제거 및 초기화
+      await chrome.storage.local.remove('courseIds');
+      courseIdsPromise = null;
 
-    return new Promise<CourseInfo[]>((resolve) => {
-      const listener = (message: any) => {
-        if (message.type === 'COURSE_IDS') {
+      // 콘텐츠 스크립트 삽입 여부 확인 후 삽입
+      if (!await hasContentScript(tabId, 'getCourseId')) {
+        console.log('[이코] 콘텐츠 스크립트(getCourseId) 삽입 시작');
+        await injectContentScript(tabId, 'content-scripts/getCourseId.js');
+      } else {
+        console.log('[이코] 콘텐츠 스크립트(getCourseId) 이미 삽입됨');
+      }
+
+      return await new Promise<CourseInfo[]>((resolve, reject) => {
+        const timeout = setTimeout(() => {
           chrome.runtime.onMessage.removeListener(listener);
-          console.log('[이코] 수신된 courseIds:', message.data);
+          console.error('[이코] courseIds 응답 시간 초과');
+          reject(new Error('강의 목록을 가져오지 못했습니다.'));
+        }, 5000);
 
-          chrome.storage.local.set({ courseIds: message.data }, () => {
-            resolve(message.data);
-            courseIdsPromise = null;  // 초기화해서 다음 호출 가능하게
-          });
-          totalVodCount = message.data.length;
-        }
-      };
-      chrome.runtime.onMessage.addListener(listener);
-    });
+        const listener = (message: any) => {
+          if (message.type === 'COURSE_IDS') {
+            clearTimeout(timeout);
+            chrome.runtime.onMessage.removeListener(listener);
+            console.log('[이코] 수신된 courseIds:', message.data);
+
+            chrome.storage.local.set({ courseIds: message.data }, () => {
+              resolve(message.data);
+              courseIdsPromise = null;
+            });
+            totalVodCount = message.data.length;
+          }
+        };
+        chrome.runtime.onMessage.addListener(listener);
+      });
+    }
+
+    // 정상 캐시 사용
+    console.log('[이코] 스토리지에서 courseIds 불러옴');
+    return courseIds;
   })();
 
   return courseIdsPromise;
