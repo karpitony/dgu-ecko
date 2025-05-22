@@ -236,28 +236,38 @@ async function handleAllCourseVod(
     totalVodCount = courseList.length;
   }
 
-  // 모든 코스에 대해 캐시 체크 후, 없으면 삽입
+  const invalidCourseIds:CourseInfo[] = [];
+  for (const course of courseList) {
+    const storageKey = `course_${course.id}_vod`;
+    const result = await chrome.storage.local.get(storageKey);
+    const cached = result[storageKey];
+    const isCacheValid =
+      cached &&
+      cached.fetchedAt &&
+      now.getTime() - new Date(cached.fetchedAt).getTime() < MAX_CACHE_AGE_MS;
 
-  console.log(`[이코] 콘텐츠 스크립트(fetchAndParseVod) 삽입 시작`);
-  await injectContentScript(tabId, 'content-scripts/fetchAndParseVod.js');
+    if (!forceRefresh && isCacheValid) {
+      console.log(`[이코] 캐시 사용 : ${course.title}(${course.id})`);
+      completedVodCount++;
+      completeGetTotalVodCount();
+      continue;
+    } else {
+      console.log(`[이코] 캐시 만료 : ${course.title}(${course.id})`);
+      invalidCourseIds.push(course);
+    }
+  }
+
+  // 모든 코스에 대해 캐시 체크 후, 없으면 삽입
+  // 단, 콘텐츠 스크립트는 한번만 삽입
+  if (!await hasContentScript(tabId, 'fetchAndParseVod')) {
+    console.log(`[이코] 콘텐츠 스크립트(fetchAndParseVod) 삽입 시작`);
+    await injectContentScript(tabId, 'content-scripts/fetchAndParseVod.js');
+  } else {
+    console.log('[이코] 콘텐츠 스크립트(fetchAndParseVod) 이미 삽입됨');
+  }
 
   await Promise.all(
-    courseList.map(async (course) => {
-      const storageKey = `course_${course.id}_vod`;
-      const result = await chrome.storage.local.get(storageKey);
-      const cached = result[storageKey];
-      const isCacheValid =
-        cached &&
-        cached.fetchedAt &&
-        now.getTime() - new Date(cached.fetchedAt).getTime() < MAX_CACHE_AGE_MS;
-
-      if (!forceRefresh && isCacheValid) {
-        console.log(`[이코] 캐시 사용 : ${course.title}(${course.id})`);
-        completedVodCount++;
-        completeGetTotalVodCount();
-        return;
-      }
-
+    invalidCourseIds.map(async (course) => {
       await sendMessageToTab(tabId, {
         type: 'PARSE_VOD_FOR_ID',
         courseId: course.id,
@@ -303,26 +313,38 @@ async function handleAllCourseAssignments(
     totalAssignmentCount = courseList.length;
   }
 
-  console.log(`[이코] 콘텐츠 스크립트(fetchAndParseAssignment) 삽입 시작`);
-  await injectContentScript(tabId, 'content-scripts/fetchAndParseAssignment.js');
+  const invalidCourseIds: CourseInfo[] = [];
+  for (const course of courseList) {
+    const storageKey = `course_${course.id}_assignment`;
+    const result = await chrome.storage.local.get(storageKey);
+    const cached = result[storageKey];
+    const isCacheValid =
+      cached &&
+      cached.fetchedAt &&
+      now.getTime() - new Date(cached.fetchedAt).getTime() < MAX_CACHE_AGE_MS;
+
+    if (!forceRefresh && isCacheValid) {
+      console.log(`[이코] 과제 캐시 사용: ${course.title}(${course.id})`);
+      completedAssignmentCount++;
+      completeGetTotalAssignmentCount();
+      continue;
+    } else {
+      console.log(`[이코] 과제 캐시 만료: ${course.title}(${course.id})`);
+      invalidCourseIds.push(course);
+    }
+  }
+  
+  // 모든 코스에 대해 캐시 체크 후, 없으면 삽입
+  // 단, 콘텐츠 스크립트는 한번만 삽입
+  if (!await hasContentScript(tabId, 'fetchAndParseAssignment')) {
+    console.log(`[이코] 콘텐츠 스크립트(fetchAndParseAssignment) 삽입 시작`);
+    await injectContentScript(tabId, 'content-scripts/fetchAndParseAssignment.js');
+  } else {
+    console.log('[이코] 콘텐츠 스크립트(fetchAndParseAssignment) 이미 삽입됨');
+  }
 
   await Promise.all(
-    courseList.map(async (course) => {
-      const storageKey = `course_${course.id}_assignment`;
-      const result = await chrome.storage.local.get(storageKey);
-      const cached = result[storageKey];
-      const isCacheValid =
-        cached &&
-        cached.fetchedAt &&
-        now.getTime() - new Date(cached.fetchedAt).getTime() < MAX_CACHE_AGE_MS;
-
-      if (!forceRefresh && isCacheValid) {
-        console.log(`[이코] 과제 캐시 사용: ${course.title}(${course.id})`);
-        completedAssignmentCount++;
-        completeGetTotalAssignmentCount();
-        return;
-      }
-
+    invalidCourseIds.map(async (course) => {
       await sendMessageToTab(tabId, {
         type: 'PARSE_ASSIGNMENT_FOR_ID',
         courseId: course.id,
