@@ -19,8 +19,8 @@ export default function Vod() {
   }
   
   return (
-    <div className="p-4 w-full h-screen overflow-y-auto">
-      <h2 className="text-xl font-bold mt-8 mb-4">남은 VOD</h2>
+    <div className="p-4 w-full h-screen overflow-y-auto flex flex-col items-start">
+      <h2 className="text-xl font-bold mb-4">남은 VOD</h2>
       <CourseVodList courses={vodData} />
     </div>
   );
