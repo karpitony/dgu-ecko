@@ -1,5 +1,14 @@
 # 이코: 이클래스 도와주는 코끼리
 
+<p align="center">
+  <br>
+  <br>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="license"/></a>
+  <a href="https://chromewebstore.google.com/detail/이코-이클래스-도와주는-코끼리/jmcmadbhcejffmkgomehebjpglhfmggp"><img src="https://img.shields.io/chrome-web-store/v/jmcmadbhcejffmkgomehebjpglhfmggp.svg" alt="chrome-webstore"/></a>
+  <a href="https://chromewebstore.google.com/detail/이코-이클래스-도와주는-코끼리/jmcmadbhcejffmkgomehebjpglhfmggp"><img src="https://img.shields.io/chrome-web-store/d/jmcmadbhcejffmkgomehebjpglhfmggp.svg" alt="users"></a>
+  <br>
+</p>
+
 ![screenshot](./assets/screenshot01.png)
 
 [![My Skills](https://skillicons.dev/icons?i=ts,react,tailwindcss,vite,pnpm)](https://skillicons.dev)
