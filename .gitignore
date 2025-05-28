@@ -1,6 +1,7 @@
 .env
 .env.local
 dist_ts
+*.zip
 
 *.crx
 *.pem
