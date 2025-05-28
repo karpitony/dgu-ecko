@@ -10,6 +10,7 @@ export default function Routers() {
     {path: '/',
       element: <RootLayout />,
       children: [
+        { path: '/', element: <HomePage /> },
         { path: '/index.html', element: <HomePage /> },
         { path: '/vod', element: <Vod /> },
         { path: '/assignment', element: <Assignment /> },
