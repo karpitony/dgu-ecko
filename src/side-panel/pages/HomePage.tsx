@@ -1,17 +1,14 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { useCourseVod } from '@/side-panel/hooks/useCourseVod';
 import { useCourseAssignments } from '@/side-panel/hooks/useCourseAssignment';
 import CourseVodList from '@/side-panel/components/VodList';
 import AssignmentList from '@/side-panel/components/AssignmentList';
-import type { PageList } from '@/side-panel/App';
 import { LuRefreshCcw } from "react-icons/lu";
 import { formatDateTime } from '@/side-panel/libs/formatDateTime';
 
-export default function HomePage({
-  setCurrentPage,
-}: {
-  setCurrentPage: (currentPage: PageList) => void;
-}) {
+export default function HomePage() {
+  const navigate = useNavigate();
   const { 
     courses: vodData,
     loading: vodLoading,
@@ -43,7 +40,7 @@ export default function HomePage({
         <h2 className="text-xl font-bold">남은 과제</h2>
         <button
           className="text-blue-500 hover:underline text-base"
-          onClick={() => setCurrentPage('assignment')}
+          onClick={() => navigate('/assignment')}
         >
           전체 과제 보기
         </button>
@@ -65,7 +62,7 @@ export default function HomePage({
         <h2 className="text-xl font-bold">남은 VOD</h2>
         <button
           className="text-blue-500 hover:underline text-base"
-          onClick={() => setCurrentPage('vod')}
+          onClick={() => navigate('/vod')}
         >
           전체 VOD 보기
         </button>

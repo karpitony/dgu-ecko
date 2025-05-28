@@ -1,9 +1,4 @@
-import { PageList } from "@/side-panel/App";
-
-interface HeaderProps {
-  currentPage: PageList;
-  setCurrentPage: (currentPage: PageList) => void;
-}
+import { Link } from "react-router";
 
 const NavItem = [
   {
@@ -20,29 +15,25 @@ const NavItem = [
   }
 ]
 
-export default function Header({
-  currentPage,
-  setCurrentPage
-}: HeaderProps) {
-  console.log(currentPage);
+export default function Header() {
   
   return (
     <header className="flex flex-row justify-between items-center px-2 w-full">
-      <button 
-        onClick={() => setCurrentPage("home")}
+      <Link
+        to="/"
         className="flex items-center justify-center p-1 cursor-pointer hover:bg-gray-100 rounded-lg transition-colors duration-200"
       >
         <h1 className="text-2xl font-bold">🐘 이코</h1>
-      </button>
+      </Link>
       <nav className="flex flex-row gap-2 text-lg font-semibold">
         {NavItem.map((item) => (
           <p>
-            <button 
-              onClick={() => setCurrentPage(item.name as PageList)}
+            <Link 
+              to={`/${item.name}`}
               className="flex items-center justify-center p-1 cursor-pointer hover:bg-gray-100 rounded-lg transition-colors duration-200"
             >
               {item.label}
-            </button>
+            </Link>
           </p>
         ))}
       </nav>
