@@ -20,15 +20,24 @@ export default function CourseItem({
 }: CourseItemCardProps) {
   const dday = getDday(due);
   const endDate = new Date(due);
+  const formattedDue = endDate.toLocaleString('ko-KR', {
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
 
   const badgeColor = completed
     ? 'bg-green-500'
     : dday < 0
     ? 'bg-slate-500'
-    : dday <= 3
+    : dday <= 1
     ? 'bg-red-500'
-    : dday <= 5
+    : dday <= 3
     ? 'bg-orange-500'
+    : dday <= 5
+    ? 'bg-yellow-500'
     : 'bg-slate-500';
 
   const ddayLabel =
@@ -52,14 +61,14 @@ export default function CourseItem({
 
       <div className="col-span-3 flex flex-col items-start justify-between w-full space-y-1 py-2">
         <div className="text-sm text-gray-500">
-          <span className={`${badgeColor} text-white text-xs px-2 py-0.5 rounded-lg mr-2`}>
+          <span className={`${badgeColor} text-white text-xs px-2 py-0.5 rounded-lg mr-2 font-semibold`}>
             {ddayLabel}
           </span>
           {courseTitle.split('-')[0]}
         </div>
         <h2 className="font-semibold text-base">{title}</h2>
         <div className="text-xs text-gray-500">
-          {endDate.toLocaleDateString()} 까지
+          {formattedDue} 까지
         </div>
       </div>
     </li>

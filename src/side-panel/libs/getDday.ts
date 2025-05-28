@@ -12,5 +12,5 @@ export function getDday(dateStr: string): number {
 
   const now = new Date();
   const diffMs = target.getTime() - now.getTime();
-  return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+  return Math.floor(diffMs / (1000 * 60 * 60 * 24));
 }
