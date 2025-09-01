@@ -2,7 +2,7 @@ export interface VodLecture {
   week: string;
   title: string;
   vodId: string;
-  viewUrl: string; 
+  viewUrl: string;
   viewerUrl: string;
   period: {
     start: string;

@@ -7,7 +7,8 @@ import Settings from '@/side-panel/pages/Settings';
 
 export default function Routers() {
   const router = createBrowserRouter([
-    {path: '/',
+    {
+      path: '/',
       element: <RootLayout />,
       children: [
         { path: '/', element: <HomePage /> },
@@ -25,6 +26,6 @@ export default function Routers() {
         </h3>
       ),
     },
-  ])
-  return <RouterProvider router={router} />
+  ]);
+  return <RouterProvider router={router} />;
 }

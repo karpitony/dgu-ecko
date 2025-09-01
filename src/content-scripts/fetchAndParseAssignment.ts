@@ -41,43 +41,45 @@ interface CourseAssignmentData {
   }
 
   function parseAssignmentsFromHtml(html: string): Assignment[] {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, 'text/html');
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
 
-  const tableRows = doc.querySelectorAll('table.generaltable tbody tr');
-  if (tableRows.length === 0) {
-    console.warn('[이코] ⚠️ 과제 항목을 찾을 수 없습니다.');
-    return [];
-  }
-
-  const assignments: Assignment[] = [];
-
-  for (const row of tableRows) {
-    const tds = row.querySelectorAll('td');
-    if (tds.length < 7) continue;
-
-    const titleAnchor = tds[4].querySelector('a');
-    const title = titleAnchor?.textContent?.trim() ?? '';
-    const url = titleAnchor?.getAttribute('href') ?? '';
-
-    const dueRaw = tds[5].textContent?.trim() ?? '';
-    const due = dueRaw === '-' ? null : dueRaw;
-
-    const status = tds[6].textContent?.trim() ?? '제출 정보 없음';
-
-    if (!title || !url) {
-      console.warn('[이코] ⚠️ 과제 제목 또는 URL 누락 - 무시됨:', { title, url });
-      continue;
+    const tableRows = doc.querySelectorAll('table.generaltable tbody tr');
+    if (tableRows.length === 0) {
+      console.warn('[이코] ⚠️ 과제 항목을 찾을 수 없습니다.');
+      return [];
     }
 
-    assignments.push({ title, url, due, status });
+    const assignments: Assignment[] = [];
+
+    for (const row of tableRows) {
+      const tds = row.querySelectorAll('td');
+      if (tds.length < 7) continue;
+
+      const titleAnchor = tds[4].querySelector('a');
+      const title = titleAnchor?.textContent?.trim() ?? '';
+      const url = titleAnchor?.getAttribute('href') ?? '';
+
+      const dueRaw = tds[5].textContent?.trim() ?? '';
+      const due = dueRaw === '-' ? null : dueRaw;
+
+      const status = tds[6].textContent?.trim() ?? '제출 정보 없음';
+
+      if (!title || !url) {
+        console.warn('[이코] ⚠️ 과제 제목 또는 URL 누락 - 무시됨:', { title, url });
+        continue;
+      }
+
+      assignments.push({ title, url, due, status });
+    }
+
+    return assignments;
   }
 
-  return assignments;
-}
-
-
-  async function fetchAndParseAssignment(courseId: string, courseTitle: string): Promise<Assignment[] | null> {
+  async function fetchAndParseAssignment(
+    courseId: string,
+    courseTitle: string,
+  ): Promise<Assignment[] | null> {
     const html = await fetchAssignmentPage(courseId);
     if (!html) return null;
 
@@ -93,13 +95,13 @@ interface CourseAssignmentData {
 
     chrome.runtime.sendMessage(
       { type: 'COURSE_ASSIGNMENT_DATA', data: courseAssignmentData },
-      (response) => {
+      response => {
         if (chrome.runtime.lastError) {
           console.warn('[이코] ⚠️ 과제 데이터 전송 실패:', chrome.runtime.lastError.message);
         } else {
           console.log('[이코] 과제 데이터 전송 성공:', response);
         }
-      }
+      },
     );
     return assignments;
   }
@@ -113,11 +115,11 @@ interface CourseAssignmentData {
           .then(() => {
             sendResponse({ ok: true });
           })
-          .catch((err) => {
+          .catch(err => {
             console.error('[이코] 과제 파싱 실패:', err);
             sendResponse({ ok: false, error: err.message });
           });
-        return true; 
+        return true;
       }
     });
   })();

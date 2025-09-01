@@ -1,4 +1,3 @@
-
 function sidePanelButtons() {
   const navUser = document.querySelector('.nav.nav-pills.nav-user');
   if (navUser) {

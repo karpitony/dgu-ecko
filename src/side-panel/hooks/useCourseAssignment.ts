@@ -5,23 +5,25 @@ export function useCourseAssignments() {
   const [courses, setCourses] = useState<CourseAssignmentData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const isChromeRuntime =
-    typeof chrome !== 'undefined' && !!chrome.runtime?.sendMessage;
+  const isChromeRuntime = typeof chrome !== 'undefined' && !!chrome.runtime?.sendMessage;
 
-  const fetchAssignments = useCallback((forceRefresh = false) => {
-    if (!isChromeRuntime) return;
+  const fetchAssignments = useCallback(
+    (forceRefresh = false) => {
+      if (!isChromeRuntime) return;
 
-    setLoading(true);
-    setError(null);
+      setLoading(true);
+      setError(null);
 
-    chrome.runtime.sendMessage({ type: 'GET_COURSE_ASSIGNMENT_DATA', forceRefresh }, (res) => {
-      if (res?.error) {
-        console.error('백그라운드 요청 오류:', res.error);
-        setError(res.error);
-        setLoading(false);
-      }
-    });
-  }, [isChromeRuntime]);
+      chrome.runtime.sendMessage({ type: 'GET_COURSE_ASSIGNMENT_DATA', forceRefresh }, res => {
+        if (res?.error) {
+          console.error('백그라운드 요청 오류:', res.error);
+          setError(res.error);
+          setLoading(false);
+        }
+      });
+    },
+    [isChromeRuntime],
+  );
 
   useEffect(() => {
     fetchAssignments(false); // 최초 요청 시 캐시 사용
@@ -30,10 +32,7 @@ export function useCourseAssignments() {
   useEffect(() => {
     if (!isChromeRuntime) return;
 
-    const handleMessage = (msg: {
-      type: string;
-      payload: CourseAssignmentData[];
-    }) => {
+    const handleMessage = (msg: { type: string; payload: CourseAssignmentData[] }) => {
       if (msg.type !== 'ALL_COURSE_ASSIGNMENT_DATA') return;
       setCourses(msg.payload);
       setLoading(false);

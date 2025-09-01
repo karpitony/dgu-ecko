@@ -1,5 +1,5 @@
-import { Outlet } from "react-router";
-import Header from "@/side-panel/components/Header";
+import { Outlet } from 'react-router';
+import Header from '@/side-panel/components/Header';
 
 export default function RootLayout() {
   return (

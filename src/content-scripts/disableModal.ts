@@ -1,4 +1,4 @@
-(function() {
+(function () {
   function removeModals() {
     document.querySelectorAll('.modal.notice_popup').forEach(el => el.remove());
     document.querySelectorAll('[id^="notice_popup_31_"]').forEach(el => el.remove());
@@ -11,7 +11,7 @@
     observer.observe(document.body, { childList: true, subtree: true });
   }
 
-  chrome.storage.sync.get(['modalBlockEnabled'], (result) => {
+  chrome.storage.sync.get(['modalBlockEnabled'], result => {
     if (result.modalBlockEnabled) {
       startModalBlock();
     }

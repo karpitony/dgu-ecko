@@ -1,189 +1,189 @@
 {
-    "courseId": "121212",
-    "courseTitle": "동국의역사와인물 (1학기)",
-    "fetchedAt": "2025-05-14",
-    "lectures": [
-        {
-            "completed": true,
-            "period": {
-                "end": "2025-03-10 23:59:59",
-                "lateEnd": "2025-03-17 23:59:59",
-                "start": "2025-03-04 00:00:00"
-            },
-            "title": "1주차 1차시 강의1",
-            "viewUrl": "https://eclass.dongguk.edu/mod/vod/view.php?id=9171",
-            "viewerUrl": "https://eclass.dongguk.edu/mod/vod/viewer.php?id=9171",
-            "vodId": "9171",
-            "week": "1주차"
-        },
-        {
-            "completed": true,
-            "period": {
-                "end": "2025-03-17 23:59:59",
-                "lateEnd": "2025-03-24 23:59:59",
-                "start": "2025-03-11 00:00:00"
-            },
-            "title": "2주차 1차시 강의1",
-            "viewUrl": "https://eclass.dongguk.edu/mod/vod/view.php?id=9172",
-            "viewerUrl": "https://eclass.dongguk.edu/mod/vod/viewer.php?id=9172",
-            "vodId": "9172",
-            "week": "2주차"
-        },
-        {
-            "completed": true,
-            "period": {
-                "end": "2025-03-24 23:59:59",
-                "lateEnd": "2025-03-31 23:59:59",
-                "start": "2025-03-18 00:00:00"
-            },
-            "title": "3주차 1차시 강의1",
-            "viewUrl": "https://eclass.dongguk.edu/mod/vod/view.php?id=9174",
-            "viewerUrl": "https://eclass.dongguk.edu/mod/vod/viewer.php?id=9174",
-            "vodId": "9174",
-            "week": "3주차"
-        },
-        {
-            "completed": true,
-            "period": {
-                "end": "2025-03-31 23:59:59",
-                "lateEnd": "2025-04-07 23:59:59",
-                "start": "2025-03-25 00:00:00"
-            },
-            "title": "4주차 1차시 강의1",
-            "viewUrl": "https://eclass.dongguk.edu/mod/vod/view.php?id=9176",
-            "viewerUrl": "https://eclass.dongguk.edu/mod/vod/viewer.php?id=9176",
-            "vodId": "9176",
-            "week": "4주차"
-        },
-        {
-            "completed": true,
-            "period": {
-                "end": "2025-04-07 23:59:59",
-                "lateEnd": "2025-04-14 23:59:59",
-                "start": "2025-04-01 00:00:00"
-            },
-            "title": "5주차 1차시 강의1",
-            "viewUrl": "https://eclass.dongguk.edu/mod/vod/view.php?id=9178",
-            "viewerUrl": "https://eclass.dongguk.edu/mod/vod/viewer.php?id=9178",
-            "vodId": "9178",
-            "week": "5주차"
-        },
-        {
-            "completed": true,
-            "period": {
-                "end": "2025-04-14 23:59:59",
-                "lateEnd": "2025-04-21 23:59:59",
-                "start": "2025-04-08 00:00:00"
-            },
-            "title": "6주차 1차시 강의1",
-            "viewUrl": "https://eclass.dongguk.edu/mod/vod/view.php?id=9179",
-            "viewerUrl": "https://eclass.dongguk.edu/mod/vod/viewer.php?id=9179",
-            "vodId": "9179",
-            "week": "6주차"
-        },
-        {
-            "completed": true,
-            "period": {
-                "end": "2025-04-21 23:59:59",
-                "lateEnd": "2025-04-28 23:59:59",
-                "start": "2025-04-15 00:00:00"
-            },
-            "title": "7주차 1차시 강의1",
-            "viewUrl": "https://eclass.dongguk.edu/mod/vod/view.php?id=9180",
-            "viewerUrl": "https://eclass.dongguk.edu/mod/vod/viewer.php?id=9180",
-            "vodId": "9180",
-            "week": "7주차"
-        },
-        {
-            "completed": true,
-            "period": {
-                "end": "2025-04-28 23:59:59",
-                "lateEnd": "2025-05-05 23:59:59",
-                "start": "2025-04-22 00:00:00"
-            },
-            "title": "8주차 1차시 강의1",
-            "viewUrl": "https://eclass.dongguk.edu/mod/vod/view.php?id=9181",
-            "viewerUrl": "https://eclass.dongguk.edu/mod/vod/viewer.php?id=9181",
-            "vodId": "9181",
-            "week": "8주차"
-        },
-        {
-            "completed": true,
-            "period": {
-                "end": "2025-05-05 23:59:59",
-                "lateEnd": "2025-05-12 23:59:59",
-                "start": "2025-04-29 00:00:00"
-            },
-            "title": "9주차 1차시 강의1",
-            "viewUrl": "https://eclass.dongguk.edu/mod/vod/view.php?id=9182",
-            "viewerUrl": "https://eclass.dongguk.edu/mod/vod/viewer.php?id=9182",
-            "vodId": "9182",
-            "week": "9주차"
-        },
-        {
-            "completed": true,
-            "period": {
-                "end": "2025-05-12 23:59:59",
-                "lateEnd": "2025-05-19 23:59:59",
-                "start": "2025-05-06 00:00:00"
-            },
-            "title": "10주차 1차시 강의1",
-            "viewUrl": "https://eclass.dongguk.edu/mod/vod/view.php?id=9183",
-            "viewerUrl": "https://eclass.dongguk.edu/mod/vod/viewer.php?id=9183",
-            "vodId": "9183",
-            "week": "10주차"
-        },
-        {
-            "completed": false,
-            "period": {
-                "end": "2025-05-26 23:59:59",
-                "lateEnd": "2025-06-02 23:59:59",
-                "start": "2025-05-20 00:00:00"
-            },
-            "title": "12주차 1차시 강의1",
-            "viewUrl": "",
-            "viewerUrl": "",
-            "vodId": "",
-            "week": "12주차"
-        },
-        {
-            "completed": false,
-            "period": {
-                "end": "2025-06-02 23:59:59",
-                "lateEnd": "2025-06-09 23:59:59",
-                "start": "2025-05-27 00:00:00"
-            },
-            "title": "13주차 1차시 강의1",
-            "viewUrl": "",
-            "viewerUrl": "",
-            "vodId": "",
-            "week": "13주차"
-        },
-        {
-            "completed": false,
-            "period": {
-                "end": "2025-06-09 23:59:59",
-                "lateEnd": "2025-06-16 23:59:59",
-                "start": "2025-06-03 00:00:00"
-            },
-            "title": "14주차 1차시 강의1",
-            "viewUrl": "",
-            "viewerUrl": "",
-            "vodId": "",
-            "week": "14주차"
-        },
-        {
-            "completed": false,
-            "period": {
-                "end": "2025-06-16 23:59:59",
-                "lateEnd": "2025-06-23 23:59:59",
-                "start": "2025-06-10 00:00:00"
-            },
-            "title": "15주차 1차시 강의1",
-            "viewUrl": "",
-            "viewerUrl": "",
-            "vodId": "",
-            "week": "15주차"
-        }
-    ]
+  "courseId": "121212",
+  "courseTitle": "동국의역사와인물 (1학기)",
+  "fetchedAt": "2025-05-14",
+  "lectures": [
+    {
+      "completed": true,
+      "period": {
+        "end": "2025-03-10 23:59:59",
+        "lateEnd": "2025-03-17 23:59:59",
+        "start": "2025-03-04 00:00:00"
+      },
+      "title": "1주차 1차시 강의1",
+      "viewUrl": "https://eclass.dongguk.edu/mod/vod/view.php?id=9171",
+      "viewerUrl": "https://eclass.dongguk.edu/mod/vod/viewer.php?id=9171",
+      "vodId": "9171",
+      "week": "1주차"
+    },
+    {
+      "completed": true,
+      "period": {
+        "end": "2025-03-17 23:59:59",
+        "lateEnd": "2025-03-24 23:59:59",
+        "start": "2025-03-11 00:00:00"
+      },
+      "title": "2주차 1차시 강의1",
+      "viewUrl": "https://eclass.dongguk.edu/mod/vod/view.php?id=9172",
+      "viewerUrl": "https://eclass.dongguk.edu/mod/vod/viewer.php?id=9172",
+      "vodId": "9172",
+      "week": "2주차"
+    },
+    {
+      "completed": true,
+      "period": {
+        "end": "2025-03-24 23:59:59",
+        "lateEnd": "2025-03-31 23:59:59",
+        "start": "2025-03-18 00:00:00"
+      },
+      "title": "3주차 1차시 강의1",
+      "viewUrl": "https://eclass.dongguk.edu/mod/vod/view.php?id=9174",
+      "viewerUrl": "https://eclass.dongguk.edu/mod/vod/viewer.php?id=9174",
+      "vodId": "9174",
+      "week": "3주차"
+    },
+    {
+      "completed": true,
+      "period": {
+        "end": "2025-03-31 23:59:59",
+        "lateEnd": "2025-04-07 23:59:59",
+        "start": "2025-03-25 00:00:00"
+      },
+      "title": "4주차 1차시 강의1",
+      "viewUrl": "https://eclass.dongguk.edu/mod/vod/view.php?id=9176",
+      "viewerUrl": "https://eclass.dongguk.edu/mod/vod/viewer.php?id=9176",
+      "vodId": "9176",
+      "week": "4주차"
+    },
+    {
+      "completed": true,
+      "period": {
+        "end": "2025-04-07 23:59:59",
+        "lateEnd": "2025-04-14 23:59:59",
+        "start": "2025-04-01 00:00:00"
+      },
+      "title": "5주차 1차시 강의1",
+      "viewUrl": "https://eclass.dongguk.edu/mod/vod/view.php?id=9178",
+      "viewerUrl": "https://eclass.dongguk.edu/mod/vod/viewer.php?id=9178",
+      "vodId": "9178",
+      "week": "5주차"
+    },
+    {
+      "completed": true,
+      "period": {
+        "end": "2025-04-14 23:59:59",
+        "lateEnd": "2025-04-21 23:59:59",
+        "start": "2025-04-08 00:00:00"
+      },
+      "title": "6주차 1차시 강의1",
+      "viewUrl": "https://eclass.dongguk.edu/mod/vod/view.php?id=9179",
+      "viewerUrl": "https://eclass.dongguk.edu/mod/vod/viewer.php?id=9179",
+      "vodId": "9179",
+      "week": "6주차"
+    },
+    {
+      "completed": true,
+      "period": {
+        "end": "2025-04-21 23:59:59",
+        "lateEnd": "2025-04-28 23:59:59",
+        "start": "2025-04-15 00:00:00"
+      },
+      "title": "7주차 1차시 강의1",
+      "viewUrl": "https://eclass.dongguk.edu/mod/vod/view.php?id=9180",
+      "viewerUrl": "https://eclass.dongguk.edu/mod/vod/viewer.php?id=9180",
+      "vodId": "9180",
+      "week": "7주차"
+    },
+    {
+      "completed": true,
+      "period": {
+        "end": "2025-04-28 23:59:59",
+        "lateEnd": "2025-05-05 23:59:59",
+        "start": "2025-04-22 00:00:00"
+      },
+      "title": "8주차 1차시 강의1",
+      "viewUrl": "https://eclass.dongguk.edu/mod/vod/view.php?id=9181",
+      "viewerUrl": "https://eclass.dongguk.edu/mod/vod/viewer.php?id=9181",
+      "vodId": "9181",
+      "week": "8주차"
+    },
+    {
+      "completed": true,
+      "period": {
+        "end": "2025-05-05 23:59:59",
+        "lateEnd": "2025-05-12 23:59:59",
+        "start": "2025-04-29 00:00:00"
+      },
+      "title": "9주차 1차시 강의1",
+      "viewUrl": "https://eclass.dongguk.edu/mod/vod/view.php?id=9182",
+      "viewerUrl": "https://eclass.dongguk.edu/mod/vod/viewer.php?id=9182",
+      "vodId": "9182",
+      "week": "9주차"
+    },
+    {
+      "completed": true,
+      "period": {
+        "end": "2025-05-12 23:59:59",
+        "lateEnd": "2025-05-19 23:59:59",
+        "start": "2025-05-06 00:00:00"
+      },
+      "title": "10주차 1차시 강의1",
+      "viewUrl": "https://eclass.dongguk.edu/mod/vod/view.php?id=9183",
+      "viewerUrl": "https://eclass.dongguk.edu/mod/vod/viewer.php?id=9183",
+      "vodId": "9183",
+      "week": "10주차"
+    },
+    {
+      "completed": false,
+      "period": {
+        "end": "2025-05-26 23:59:59",
+        "lateEnd": "2025-06-02 23:59:59",
+        "start": "2025-05-20 00:00:00"
+      },
+      "title": "12주차 1차시 강의1",
+      "viewUrl": "",
+      "viewerUrl": "",
+      "vodId": "",
+      "week": "12주차"
+    },
+    {
+      "completed": false,
+      "period": {
+        "end": "2025-06-02 23:59:59",
+        "lateEnd": "2025-06-09 23:59:59",
+        "start": "2025-05-27 00:00:00"
+      },
+      "title": "13주차 1차시 강의1",
+      "viewUrl": "",
+      "viewerUrl": "",
+      "vodId": "",
+      "week": "13주차"
+    },
+    {
+      "completed": false,
+      "period": {
+        "end": "2025-06-09 23:59:59",
+        "lateEnd": "2025-06-16 23:59:59",
+        "start": "2025-06-03 00:00:00"
+      },
+      "title": "14주차 1차시 강의1",
+      "viewUrl": "",
+      "viewerUrl": "",
+      "vodId": "",
+      "week": "14주차"
+    },
+    {
+      "completed": false,
+      "period": {
+        "end": "2025-06-16 23:59:59",
+        "lateEnd": "2025-06-23 23:59:59",
+        "start": "2025-06-10 00:00:00"
+      },
+      "title": "15주차 1차시 강의1",
+      "viewUrl": "",
+      "viewerUrl": "",
+      "vodId": "",
+      "week": "15주차"
+    }
+  ]
 }

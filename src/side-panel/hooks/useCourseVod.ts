@@ -7,19 +7,17 @@ export function useCourseVod() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const isChromeRuntime =
-    typeof chrome !== 'undefined' && !!chrome.runtime?.sendMessage;
+  const isChromeRuntime = typeof chrome !== 'undefined' && !!chrome.runtime?.sendMessage;
 
   // 공통 fetch 함수
-  const fetchVodData = useCallback((forceRefresh = false) => {
-    if (!isChromeRuntime) return;
+  const fetchVodData = useCallback(
+    (forceRefresh = false) => {
+      if (!isChromeRuntime) return;
 
-    setLoading(true);
-    setError(null);
+      setLoading(true);
+      setError(null);
 
-    chrome.runtime.sendMessage(
-      { type: 'GET_COURSE_VOD_DATA', forceRefresh },
-      (res) => {
+      chrome.runtime.sendMessage({ type: 'GET_COURSE_VOD_DATA', forceRefresh }, res => {
         const vodData: CourseVodData | undefined = res?.data;
         if (!vodData) {
           setError('데이터를 불러오지 못했습니다.');
@@ -36,9 +34,10 @@ export function useCourseVod() {
           },
         ]);
         setLoading(false);
-      }
-    );
-  }, [isChromeRuntime]);
+      });
+    },
+    [isChromeRuntime],
+  );
 
   useEffect(() => {
     if (!isChromeRuntime) {
@@ -63,7 +62,7 @@ export function useCourseVod() {
     const handleMessage = (msg: { type: string; payload: CourseVodData[] }) => {
       if (msg.type !== 'ALL_COURSE_VOD_DATA') return;
 
-      const next = msg.payload.map<CourseVodData>((d) => ({
+      const next = msg.payload.map<CourseVodData>(d => ({
         courseId: d.courseId,
         courseTitle: d.courseTitle,
         fetchedAt: d.fetchedAt,

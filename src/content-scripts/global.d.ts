@@ -4,10 +4,7 @@
  * 컴파일 시 export를 끼워넣어서 브라우저가 컴파일된 js를 인식하지 못함
  */
 
-import { 
-  VodLecture as ImportVodLecture,
-  CourseVodData as ImportCourseVodData
-} from './types';
+import { VodLecture as ImportVodLecture, CourseVodData as ImportCourseVodData } from './types';
 
 declare global {
   type VodLecture = ImportVodLecture;

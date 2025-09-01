@@ -1,6 +1,6 @@
 {
   "name": "dgu-ecko",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "chrome extension for dongguk university e-class",
   "license": "MIT",
   "author": "karpitony",
@@ -10,7 +10,8 @@
     "build": "vite build && tsx scripts/post-build.ts",
     "dev": "vite",
     "preview": "vite preview",
-    "zip": "cd dist && zip -r ../dgu-ecko.zip . -x '*.DS_Store' -x '__MACOSX'"
+    "zip": "cd dist && zip -r ../dgu-ecko.zip . -x '*.DS_Store' -x '__MACOSX'",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@yeahx4/cn": "^1.0.5",

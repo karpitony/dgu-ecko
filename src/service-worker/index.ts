@@ -11,10 +11,10 @@ const now = new Date();
 /**
  * 콘텐츠 스크립트 삽입 여부 판단하는 함수
  * 콘텐츠 스크립트들은 삽입 시 투명 마커 태그를 만듬
- */ 
+ */
 function hasContentScript(tabId: number, markerId: string): Promise<boolean> {
   const MARKER_TEMPLATE = `_ekco_marker_${markerId}`;
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     chrome.scripting.executeScript(
       {
         target: { tabId },
@@ -23,13 +23,13 @@ function hasContentScript(tabId: number, markerId: string): Promise<boolean> {
         },
         args: [MARKER_TEMPLATE],
       },
-      (results) => {
+      results => {
         if (chrome.runtime.lastError || !results?.[0]?.result) {
           resolve(false);
         } else {
           resolve(true);
         }
-      }
+      },
     );
   });
 }
@@ -39,11 +39,11 @@ function hasContentScript(tabId: number, markerId: string): Promise<boolean> {
 function injectContentScript(tabId: number, filePath: string): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     chrome.scripting.executeScript(
-      { 
-        target: { tabId }, 
-        files: [filePath] 
+      {
+        target: { tabId },
+        files: [filePath],
       },
-      (results) => {
+      results => {
         const lastError = chrome.runtime.lastError;
         if (lastError) {
           console.error(`콘텐츠 스크립트 삽입 실패 [${filePath}]`, lastError);
@@ -53,7 +53,7 @@ function injectContentScript(tabId: number, filePath: string): Promise<void> {
 
         console.log(`콘텐츠 스크립트 삽입 성공 [${filePath}]`, results);
         resolve();
-      }
+      },
     );
   });
 }
@@ -62,7 +62,7 @@ function injectContentScript(tabId: number, filePath: string): Promise<void> {
  * 탭에 메시지를 보내고, 콜백이 끝날 때까지 기다린다.
  */
 function sendMessageToTab(tabId: number, message: any) {
-  return new Promise<void>((resolve) => {
+  return new Promise<void>(resolve => {
     chrome.tabs.sendMessage(tabId, message, () => {
       resolve();
     });
@@ -91,7 +91,7 @@ export async function getCourseIds(tabId: number): Promise<CourseInfo[]> {
       courseIdsPromise = null;
 
       // 콘텐츠 스크립트 삽입 여부 확인 후 삽입
-      if (!await hasContentScript(tabId, 'getCourseId')) {
+      if (!(await hasContentScript(tabId, 'getCourseId'))) {
         console.log('[이코] 콘텐츠 스크립트(getCourseId) 삽입 시작');
         await injectContentScript(tabId, 'content-scripts/getCourseId.js');
       } else {
@@ -130,7 +130,6 @@ export async function getCourseIds(tabId: number): Promise<CourseInfo[]> {
   return courseIdsPromise;
 }
 
-
 // 사이드패널 여는 코드
 chrome.runtime.onInstalled.addListener(() => {
   chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }, () => {
@@ -140,7 +139,7 @@ chrome.runtime.onInstalled.addListener(() => {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'openSidePanel') {
-    chrome.windows.getCurrent((currentWindow) => {
+    chrome.windows.getCurrent(currentWindow => {
       if (currentWindow?.id !== undefined) {
         chrome.sidePanel.open({ windowId: currentWindow.id });
       }
@@ -156,7 +155,7 @@ interface GetCourseVodDataMsg {
 interface CourseVodDataMsg {
   type: 'COURSE_VOD_DATA';
   lectures: any;
-  courseId: string; 
+  courseId: string;
   courseTitle: string;
 }
 
@@ -168,7 +167,7 @@ chrome.runtime.onMessage.addListener((message: MessagePayload, sender, sendRespo
       console.log('[이코] 강의 VOD 데이터 요청 (전체 강의 조회)');
       handleAllCourseVod(message?.forceRefresh)
         .then(() => sendResponse({ triggered: true }))
-        .catch((err) => {
+        .catch(err => {
           console.error(err);
           sendResponse({ error: (err as Error).message });
         });
@@ -178,21 +177,21 @@ chrome.runtime.onMessage.addListener((message: MessagePayload, sender, sendRespo
     case 'COURSE_VOD_DATA': {
       const { courseId, courseTitle, fetchedAt, lectures } = message.data;
       console.log(`[이코] ${courseTitle}(${courseId}) VOD 데이터 수신:`, lectures);
-      
+
       const storageKey = `course_${courseId}_vod`;
-      chrome.storage.local.set({ [storageKey] : message.data }, () => {
+      chrome.storage.local.set({ [storageKey]: message.data }, () => {
         console.log(`[이코] ${courseTitle}(${courseId}) 저장 완료: ${storageKey}`);
       });
       completedVodCount++;
       completeGetTotalVodCount();
       return true;
     }
-    
+
     case 'GET_COURSE_ASSIGNMENT_DATA': {
       console.log('[이코] 과제 데이터 요청');
       handleAllCourseAssignments(message?.forceRefresh)
         .then(() => sendResponse({ triggered: true }))
-        .catch((err) => {
+        .catch(err => {
           console.error(err);
           sendResponse({ error: (err as Error).message });
         });
@@ -218,9 +217,7 @@ chrome.runtime.onMessage.addListener((message: MessagePayload, sender, sendRespo
   }
 });
 
-async function handleAllCourseVod(
-  forceRefresh = false
-) {
+async function handleAllCourseVod(forceRefresh = false) {
   completedVodCount = 0;
 
   const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -236,7 +233,7 @@ async function handleAllCourseVod(
     totalVodCount = courseList.length;
   }
 
-  const invalidCourseIds:CourseInfo[] = [];
+  const invalidCourseIds: CourseInfo[] = [];
   for (const course of courseList) {
     const storageKey = `course_${course.id}_vod`;
     const result = await chrome.storage.local.get(storageKey);
@@ -259,7 +256,7 @@ async function handleAllCourseVod(
 
   // 모든 코스에 대해 캐시 체크 후, 없으면 삽입
   // 단, 콘텐츠 스크립트는 한번만 삽입
-  if (!await hasContentScript(tabId, 'fetchAndParseVod')) {
+  if (!(await hasContentScript(tabId, 'fetchAndParseVod'))) {
     console.log(`[이코] 콘텐츠 스크립트(fetchAndParseVod) 삽입 시작`);
     await injectContentScript(tabId, 'content-scripts/fetchAndParseVod.js');
   } else {
@@ -267,7 +264,7 @@ async function handleAllCourseVod(
   }
 
   await Promise.all(
-    invalidCourseIds.map(async (course) => {
+    invalidCourseIds.map(async course => {
       await sendMessageToTab(tabId, {
         type: 'PARSE_VOD_FOR_ID',
         courseId: course.id,
@@ -294,9 +291,7 @@ async function completeGetTotalVodCount() {
   }
 }
 
-async function handleAllCourseAssignments(
-  forceRefresh = false
-) {
+async function handleAllCourseAssignments(forceRefresh = false) {
   console.log('[이코] 과제 전체 수집 함수 진입');
   completedAssignmentCount = 0;
 
@@ -333,10 +328,10 @@ async function handleAllCourseAssignments(
       invalidCourseIds.push(course);
     }
   }
-  
+
   // 모든 코스에 대해 캐시 체크 후, 없으면 삽입
   // 단, 콘텐츠 스크립트는 한번만 삽입
-  if (!await hasContentScript(tabId, 'fetchAndParseAssignment')) {
+  if (!(await hasContentScript(tabId, 'fetchAndParseAssignment'))) {
     console.log(`[이코] 콘텐츠 스크립트(fetchAndParseAssignment) 삽입 시작`);
     await injectContentScript(tabId, 'content-scripts/fetchAndParseAssignment.js');
   } else {
@@ -344,14 +339,14 @@ async function handleAllCourseAssignments(
   }
 
   await Promise.all(
-    invalidCourseIds.map(async (course) => {
+    invalidCourseIds.map(async course => {
       await sendMessageToTab(tabId, {
         type: 'PARSE_ASSIGNMENT_FOR_ID',
         courseId: course.id,
         courseTitle: course.title,
       });
       console.log(`[이코] PARSE_ASSIGNMENT_FOR_ID 요청 완료: ${course.title}(${course.id})`);
-    })
+    }),
   );
 }
 

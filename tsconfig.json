@@ -31,11 +31,7 @@
     "./src/content-scripts/**/*",
     "./src/service-worker/**/*",
     "./src/side-panel/**/*",
-    "./src/inject/**/*",
+    "./src/inject/**/*"
   ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "dist_ts",
-  ]
+  "exclude": ["node_modules", "dist", "dist_ts"]
 }

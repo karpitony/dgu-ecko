@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 html {
   line-height: 1.5; /* 텍스트 가독성을 위한 기본 줄 간격 */

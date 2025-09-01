@@ -3,7 +3,7 @@
  */
 
 (() => {
-  const ECLASS_VOD_URL = "https://eclass.dongguk.edu/course/view.php?id=";
+  const ECLASS_VOD_URL = 'https://eclass.dongguk.edu/course/view.php?id=';
 
   console.log('[이코] Content script loaded on eclass page.');
 
@@ -37,8 +37,12 @@
       return [];
     }
 
-    return Array.from(vodElements).map<VodLecture>((el) => {
-      const title = el.querySelector('.instancename')?.textContent?.trim().replace(/\s+동영상$/, '') ?? '';
+    return Array.from(vodElements).map<VodLecture>(el => {
+      const title =
+        el
+          .querySelector('.instancename')
+          ?.textContent?.trim()
+          .replace(/\s+동영상$/, '') ?? '';
 
       const viewAnchor = el.querySelector('.activityinstance a');
       const href = viewAnchor?.getAttribute('href') ?? '';
@@ -51,9 +55,12 @@
       const [startRaw, endRaw] = dateText.match(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/g) ?? [];
       const start = startRaw ?? '';
       const end = endRaw ?? '';
-      const lateEnd = dateText.match(/\(지각 ?: (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\)/)?.[1] ?? '';
+      const lateEnd =
+        dateText.match(/\(지각 ?: (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\)/)?.[1] ?? '';
 
-      const completed = (el.querySelector('.autocompletion img') as HTMLImageElement)?.title.includes('완료함') ?? false;
+      const completed =
+        (el.querySelector('.autocompletion img') as HTMLImageElement)?.title.includes('완료함') ??
+        false;
       const week = title.match(/^(\d+주차)/)?.[1] ?? '';
 
       return {
@@ -75,18 +82,21 @@
   /**
    * 전체 사이버 강의 정보 fetch + 파싱
    */
-  async function fetchAndParseVod(courseId: string, courseTitle: string): Promise<VodLecture[] | null> {
+  async function fetchAndParseVod(
+    courseId: string,
+    courseTitle: string,
+  ): Promise<VodLecture[] | null> {
     const html = await fetchCoursePage(courseId);
     if (!html) return null;
 
     const lectures = parseVodFromHtml(html);
     console.log(`[이코] ${courseTitle}(${courseId}) 파싱된 사이버 강의 목록:`, lectures);
-    const courseVodData:CourseVodData = {
+    const courseVodData: CourseVodData = {
       courseId,
       courseTitle,
       fetchedAt: new Date().toISOString(),
       lectures,
-    }
+    };
     chrome.runtime.sendMessage({ type: 'COURSE_VOD_DATA', data: courseVodData });
     return lectures;
   }
@@ -94,7 +104,9 @@
   (() => {
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       if (message.type === 'PARSE_VOD_FOR_ID' && message.courseId && message.courseTitle) {
-        console.log(`[이코] 사이버 강의 정보 파싱 요청:  ${message.courseTitle}(${message.courseId})`);
+        console.log(
+          `[이코] 사이버 강의 정보 파싱 요청:  ${message.courseTitle}(${message.courseId})`,
+        );
         fetchAndParseVod(message.courseId, message.courseTitle);
       }
     });

@@ -11,50 +11,43 @@ function parseDatetime(datetimeStr: string | null): string | null {
   return isNaN(date.getTime()) ? null : date.toISOString();
 }
 
-
-export default function AssignmentList({ 
+export default function AssignmentList({
   courses,
-  maxShow = 0
+  maxShow = 0,
 }: {
   courses: CourseAssignmentData[];
-  maxShow?: number
+  maxShow?: number;
 }) {
   const coursesWithAssignments = courses
-    .flatMap((c) =>
-      (c.assignments ?? []).map((assignment) => ({
+    .flatMap(c =>
+      (c.assignments ?? []).map(assignment => ({
         ...assignment,
         courseTitle: c.courseTitle,
       })),
     )
-    .filter((assignment) => getDday(parseDatetime(assignment.due) ?? '') >= 0)
+    .filter(assignment => getDday(parseDatetime(assignment.due) ?? '') >= 0)
     .sort((a, b) => getDday(parseDatetime(a.due) ?? '') - getDday(parseDatetime(b.due) ?? ''));
 
   // 과제 목록을 최대 maxShow개만 보여줌
   if (maxShow > 0) {
     coursesWithAssignments.splice(maxShow);
   }
-  
+
   console.log('과제 목록:', coursesWithAssignments);
   console.log(courses);
 
   if (coursesWithAssignments.length === 0)
-    return (
-      <div className="text-sm text-gray-400">
-        남은 과제가 없습니다 🎉
-      </div>
-    );
+    return <div className="text-sm text-gray-400">남은 과제가 없습니다 🎉</div>;
 
   return (
-    <div className='w-full'>
+    <div className="w-full">
       <ul className="space-y-3 w-full">
-        {coursesWithAssignments.map((a) => (
+        {coursesWithAssignments.map(a => (
           <CourseItem
             key={`${a.courseTitle}-${a.title}`}
             icon={
-              <IoDocumentTextOutline 
-                className="text-2xl text-white p-1.5 pl-2 bg-[#8d8884] rounded-full w-12 h-12"
-                />
-              }
+              <IoDocumentTextOutline className="text-2xl text-white p-1.5 pl-2 bg-[#8d8884] rounded-full w-12 h-12" />
+            }
             title={a.title}
             courseTitle={a.courseTitle}
             due={parseDatetime(a.due) ?? ''}
