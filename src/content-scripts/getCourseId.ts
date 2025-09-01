@@ -1,37 +1,46 @@
-console.log('[이코] 콘텐츠 스크립트 getCourseId.js 삽입됨');
+(() => {
+  console.log('[이코] fetch 기반 getCourseId.js 실행됨');
 
-if (!document.getElementById('_ekco_marker_getCourseId')) {
-  const marker = document.createElement('meta');
-  marker.id = '_ekco_marker_getCourseId';
-  marker.name = '_ekco_marker_getCourseId';
-  marker.content = '_ekco_marker_getCourseId';
-  marker.style.display = 'none';
-  document.documentElement.appendChild(marker);
-}
+  async function fetchCourses() {
+    try {
+      const res = await fetch("https://eclass.dongguk.edu/", {
+        credentials: "include", // 로그인 세션 쿠키 포함
+      });
+      const html = await res.text();
 
-const courseElements = document.querySelectorAll('.course-label-r');
-const courses = Array.from(courseElements).map(el => {
-  const anchor = el.querySelector('a.course-link');
-  if (!anchor) return null;
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, "text/html");
 
-  const url = new URL((anchor as HTMLAnchorElement).href);
-  const id = url.searchParams.get('id');
+      const courseElements = doc.querySelectorAll(".course-label-r");
+      const courses = Array.from(courseElements).map(el => {
+        const anchor = el.querySelector("a.course-link") as HTMLAnchorElement | null;
+        if (!anchor) return null;
 
-  const titleElement = anchor.querySelector('h3');
-  const profElement = anchor.querySelector('.prof');
+        const url = new URL(anchor.href);
+        const id = url.searchParams.get("id");
 
-  return {
-    id,
-    title: titleElement?.innerText.trim() ?? '',
-    professor: (profElement as HTMLElement)?.innerText.trim() ?? ''
-  };
-}).filter(Boolean); 
+        const titleElement = anchor.querySelector("h3");
+        const profElement = anchor.querySelector(".prof");
 
-console.log('[이코] 강의 목록:', courses);
+        return {
+          id,
+          title: titleElement?.textContent?.trim() ?? "",
+          professor: profElement?.textContent?.trim() ?? ""
+        };
+      }).filter(Boolean);
 
-chrome.runtime.sendMessage({
-  type: 'COURSE_IDS',
-  data: courses
-});
+      console.log("[이코] 강의 목록:", courses);
 
-console.log('[이코] getCourseId.js에서 메시지 전송 완료');
+      chrome.runtime.sendMessage({
+        type: "COURSE_IDS",
+        data: courses,
+      });
+
+      console.log("[이코] getCourseId.js에서 메시지 전송 완료");
+    } catch (err) {
+      console.error("[이코] fetchCourses 실패:", err);
+    }
+  }
+
+  fetchCourses();
+})();
