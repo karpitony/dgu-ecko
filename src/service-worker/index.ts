@@ -136,7 +136,7 @@ export async function getCourseIds(tabId: number): Promise<CourseInfo[]> {
 
     // 정상 캐시 사용
     console.log('[이코] 스토리지에서 courseIds 불러옴');
-    return courseIds;
+    return courseIds.data;
   })();
 
   return courseIdsPromise;
