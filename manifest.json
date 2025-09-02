@@ -3,7 +3,7 @@
   "manifest_version": 3,
   "name": "이코 (이클래스 도와주는 코끼리)",
   "description": "동국대학교 이클래스 보조 확장 프로그램입니다.",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "side_panel": {
     "default_path": "index.html"
   },

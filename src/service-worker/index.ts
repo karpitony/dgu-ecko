@@ -6,6 +6,7 @@ let totalAssignmentCount = 0;
 let completedAssignmentCount = 0;
 
 const MAX_CACHE_AGE_MS = 1000 * 60 * 60 * 4; // 4시간
+const MAX_COURSE_ID_CACHE_AGE_MS = 1000 * 60 * 60 * 24 * 7; // 1주일
 const now = new Date();
 
 /**
@@ -83,9 +84,12 @@ export async function getCourseIds(tabId: number): Promise<CourseInfo[]> {
 
   courseIdsPromise = (async () => {
     const { courseIds } = await chrome.storage.local.get('courseIds');
-    if (!courseIds || courseIds.length === 0) {
-      console.warn('[이코] courseIds가 비어있음 → 캐시 무효화 후 재시도');
-
+    if (
+      !courseIds ||
+      !courseIds.data ||
+      now.getTime() - new Date(courseIds.fetchedAt).getTime() > MAX_COURSE_ID_CACHE_AGE_MS
+    ) {
+      console.warn('[이코] courseIds 캐시 만료 → 다시 가져옴');
       // 캐시 제거 및 초기화
       await chrome.storage.local.remove('courseIds');
       courseIdsPromise = null;
@@ -111,10 +115,18 @@ export async function getCourseIds(tabId: number): Promise<CourseInfo[]> {
             chrome.runtime.onMessage.removeListener(listener);
             console.log('[이코] 수신된 courseIds:', message.data);
 
-            chrome.storage.local.set({ courseIds: message.data }, () => {
-              resolve(message.data);
-              courseIdsPromise = null;
-            });
+            chrome.storage.local.set(
+              {
+                courseIds: {
+                  data: message.data, // 강의 배열
+                  fetchedAt: new Date().toISOString(),
+                },
+              },
+              () => {
+                resolve(message.data);
+                courseIdsPromise = null;
+              },
+            );
             totalVodCount = message.data.length;
           }
         };
@@ -278,7 +290,12 @@ async function handleAllCourseVod(forceRefresh = false) {
 async function completeGetTotalVodCount() {
   if (completedVodCount === totalVodCount) {
     console.log('[이코] 전체 VOD 데이터 수집 완료');
-    const { courseIds } = await chrome.storage.local.get('courseIds');
+
+    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+    const tabId = tabs[0]?.id;
+    if (!tabId) throw new Error('탭 ID를 찾을 수 없습니다.');
+
+    const courseIds = await getCourseIds(tabId);
 
     let allVodData: CourseVodData[] = [];
     for (const course of courseIds) {
@@ -353,7 +370,12 @@ async function handleAllCourseAssignments(forceRefresh = false) {
 async function completeGetTotalAssignmentCount() {
   if (completedAssignmentCount === totalAssignmentCount) {
     console.log('[이코] 전체 과제 데이터 수집 완료');
-    const { courseIds } = await chrome.storage.local.get('courseIds');
+
+    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+    const tabId = tabs[0]?.id;
+    if (!tabId) throw new Error('탭 ID를 찾을 수 없습니다.');
+
+    const courseIds = await getCourseIds(tabId);
 
     let allAssignmentData = [];
     for (const course of courseIds) {
