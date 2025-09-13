@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
-import type { CourseVodData } from '@/side-panel/types/courseVodData';
-import dummyData from '@/side-panel/assets/dummyVod.json';
+import type { CourseVodData } from '@sidepanel/types/courseVodData';
+import dummyData from '@sidepanel/assets/dummyVod.json';
 
 export function useCourseVod() {
   const [courses, setCourses] = useState<CourseVodData[]>([]);

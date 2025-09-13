@@ -1,8 +1,18 @@
 import { defineConfig } from 'wxt';
+import tailwindcss from '@tailwindcss/vite';
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
+  vite: () => ({
+    plugins: [tailwindcss()],
+    resolve: {
+      alias: [
+        { find: '@', replacement: '/' },
+        { find: '@sidepanel', replacement: '/entrypoints/sidepanel' },
+      ],
+    },
+  }),
   manifest: {
     $schema: 'https://json.schemastore.org/chrome-manifest',
     manifest_version: 3,

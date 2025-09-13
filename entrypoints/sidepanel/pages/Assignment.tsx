@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router';
-import { useCourseAssignments } from '@/side-panel/hooks/useCourseAssignment';
-import AssignmentList from '@/side-panel/components/AssignmentList';
+import { useCourseAssignments } from '@sidepanel/hooks/useCourseAssignment';
+import AssignmentList from '@sidepanel/components/AssignmentList';
 
 export default function HomePage() {
   const { courses: assignmentData, loading: assignmentLoading } = useCourseAssignments();
