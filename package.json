@@ -1,23 +1,27 @@
 {
   "name": "dgu-ecko",
   "version": "0.3.6",
-  "description": "chrome extension for dongguk university e-class",
+  "description": "동국대학교 이클래스 보조 확장 프로그램입니다. chrome extension for dongguk university e-class",
   "license": "MIT",
   "author": "karpitony",
   "type": "module",
-  "main": "index.js",
+  "private": true,
   "scripts": {
-    "build": "vite build && tsx scripts/post-build.ts",
-    "dev": "vite",
-    "preview": "vite preview",
-    "zip": "cd dist && zip -r ../dgu-ecko.zip . -x '*.DS_Store' -x '__MACOSX'",
+    "dev": "wxt",
+    "dev:firefox": "wxt -b firefox",
+    "build": "wxt build",
+    "build:firefox": "wxt build -b firefox",
+    "zip": "wxt zip",
+    "zip:firefox": "wxt zip -b firefox",
+    "compile": "tsc --noEmit",
+    "postinstall": "wxt prepare",
     "format": "prettier --write ."
   },
   "dependencies": {
     "@yeahx4/cn": "^1.0.5",
     "fs-extra": "^11.3.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
     "react-icons": "^5.5.0",
     "react-router": "^7.6.1"
   },
@@ -27,8 +31,8 @@
     "@types/chrome": "^0.0.310",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^22.15.19",
-    "@types/react": "^18.3.21",
-    "@types/react-dom": "^18.3.7",
+    "@types/react": "^19.1.12",
+    "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react-swc": "^3.9.0",
     "eslint": "^9.27.0",
     "eslint-plugin-react-hooks": "^5.2.0",
@@ -39,6 +43,8 @@
     "tsx": "^4.19.4",
     "typescript": "~5.6.3",
     "typescript-eslint": "^8.32.1",
-    "vite": "^6.3.5"
+    "vite": "^6.3.5",
+    "@wxt-dev/module-react": "^1.1.3",
+    "wxt": "^0.20.6"
   }
 }
