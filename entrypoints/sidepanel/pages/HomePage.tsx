@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { useCourseVod } from '@/side-panel/hooks/useCourseVod';
-import { useCourseAssignments } from '@/side-panel/hooks/useCourseAssignment';
-import CourseVodList from '@/side-panel/components/VodList';
-import AssignmentList from '@/side-panel/components/AssignmentList';
+import { useCourseVod } from '@sidepanel/hooks/useCourseVod';
+import { useCourseAssignments } from '@sidepanel/hooks/useCourseAssignment';
+import CourseVodList from '@sidepanel/components/VodList';
+import AssignmentList from '@sidepanel/components/AssignmentList';
 import { LuRefreshCcw } from 'react-icons/lu';
-import { formatDateTime } from '@/side-panel/libs/formatDateTime';
+import { formatDateTime } from '@sidepanel/libs/formatDateTime';
 
 export default function HomePage() {
   const navigate = useNavigate();

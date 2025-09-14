@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router';
-import { useCourseVod } from '@/side-panel/hooks/useCourseVod';
-import CourseVodList from '@/side-panel/components/VodList';
+import { useCourseVod } from '@sidepanel/hooks/useCourseVod';
+import CourseVodList from '@sidepanel/components/VodList';
 
 export default function Vod() {
   const { courses: vodData, loading: vodLoading } = useCourseVod();

@@ -1,6 +1,6 @@
-import { CourseVodData } from '@/side-panel/types/courseVodData';
-import { getDday } from '@/side-panel/libs/getDday';
-import CourseItem from '@/side-panel/components/common/CourseItem';
+import { CourseVodData } from '@sidepanel/types/courseVodData';
+import { getDday } from '@sidepanel/libs/getDday';
+import CourseItem from '@sidepanel/components/common/CourseItem';
 import { IoPlayOutline } from 'react-icons/io5';
 
 export default function CourseList({

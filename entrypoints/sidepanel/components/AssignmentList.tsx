@@ -1,6 +1,6 @@
-import { CourseAssignmentData } from '@/side-panel/types/courseAssignmentData';
-import { getDday } from '@/side-panel/libs/getDday';
-import CourseItem from '@/side-panel/components/common/CourseItem';
+import { CourseAssignmentData } from '@sidepanel/types/courseAssignmentData';
+import { getDday } from '@sidepanel/libs/getDday';
+import CourseItem from '@sidepanel/components/common/CourseItem';
 import { IoDocumentTextOutline } from 'react-icons/io5';
 
 function parseDatetime(datetimeStr: string | null): string | null {
