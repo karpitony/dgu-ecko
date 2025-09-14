@@ -5,7 +5,7 @@ import { useCourseAssignments } from '@sidepanel/hooks/useCourseAssignment';
 import CourseVodList from '@sidepanel/components/VodList';
 import AssignmentList from '@sidepanel/components/AssignmentList';
 import { LuRefreshCcw } from 'react-icons/lu';
-import { formatDateTime } from '@sidepanel/libs/formatDateTime';
+import { formatDateTime } from '@/libs/formatDateTime';
 
 export default function HomePage() {
   const navigate = useNavigate();

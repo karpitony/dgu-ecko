@@ -1,5 +1,5 @@
 import { CourseAssignmentData } from '@sidepanel/types/courseAssignmentData';
-import { getDday } from '@sidepanel/libs/getDday';
+import { getDday } from '@/libs/getDday';
 import CourseItem from '@sidepanel/components/common/CourseItem';
 import { IoDocumentTextOutline } from 'react-icons/io5';
 

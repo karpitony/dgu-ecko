@@ -6,6 +6,7 @@
 
     "baseUrl": ".",
     "paths": {
+      "@/*": ["./*"],
       "@sidepanel/*": ["entrypoints/sidepanel/*"],
       "@background/*": ["entrypoints/background/*"]
     }
