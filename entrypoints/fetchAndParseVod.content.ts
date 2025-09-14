@@ -10,6 +10,16 @@ type CourseVodData = ImportCourseVodData;
 export default defineContentScript({
   registration: 'runtime',
   main() {
+    if ((window as any).__ECO_SCRIPT_LOADED__VOD) return;
+    (window as any).__ECO_SCRIPT_LOADED__VOD = true;
+
+    if (!document.getElementById('_ekco_marker_fetchAndParseVod')) {
+      const marker = document.createElement('div');
+      marker.id = '_ekco_marker_fetchAndParseVod';
+      marker.style.display = 'none';
+      document.body.appendChild(marker);
+    }
+
     const ECLASS_VOD_URL = 'https://eclass.dongguk.edu/course/view.php?id=';
 
     console.log('[이코] Content script loaded on eclass page.');
@@ -112,9 +122,12 @@ export default defineContentScript({
       chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         if (message.type === 'PARSE_VOD_FOR_ID' && message.courseId && message.courseTitle) {
           console.log(
-            `[이코] 사이버 강의 정보 파싱 요청:  ${message.courseTitle}(${message.courseId})`,
+            `[이코] 사이버 강의 정보 파싱 요청: ${message.courseTitle}(${message.courseId})`,
           );
-          fetchAndParseVod(message.courseId, message.courseTitle);
+          fetchAndParseVod(message.courseId, message.courseTitle)
+            .then(() => sendResponse({ ok: true }))
+            .catch(err => sendResponse({ ok: false, error: err.message }));
+          return true; // 비동기 처리를 위해 반드시 필요
         }
       });
     })();

@@ -15,6 +15,16 @@ interface CourseAssignmentData {
 export default defineContentScript({
   registration: 'runtime',
   main() {
+    if ((window as any).__ECO_SCRIPT_LOADED__ASSIGNMENT) return;
+    (window as any).__ECO_SCRIPT_LOADED__ASSIGNMENT = true;
+
+    if (!document.getElementById('_ekco_marker_fetchAndParseAssignment')) {
+      const marker = document.createElement('div');
+      marker.id = '_ekco_marker_fetchAndParseAssignment';
+      marker.style.display = 'none';
+      document.body.appendChild(marker);
+    }
+
     const ECLASS_ASSIGNMENT_URL = 'https://eclass.dongguk.edu/mod/assign/index.php?id=';
 
     console.log('[이코] Content script (fetchAndParseAssignment) loaded on eclass page.');

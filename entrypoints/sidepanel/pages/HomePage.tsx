@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useCourseVod } from '@sidepanel/hooks/useCourseVod';
 import { useCourseAssignments } from '@sidepanel/hooks/useCourseAssignment';
@@ -16,15 +15,9 @@ export default function HomePage() {
     refetch: assignmentRefetch,
   } = useCourseAssignments();
 
-  const [isDataLoaded, setIsDataLoaded] = useState(false);
+  const isLoading = vodLoading || assignmentLoading;
 
-  useEffect(() => {
-    if (!vodLoading && !assignmentLoading) {
-      setIsDataLoaded(true);
-    }
-  }, [vodLoading, assignmentLoading]);
-
-  if (!isDataLoaded) {
+  if (isLoading) {
     return <div className="p-4 text-center text-gray-500">불러오는 중...</div>;
   }
 

@@ -1,4 +1,4 @@
-import { CourseInfo, CourseVodData } from '../../types';
+import { CourseInfo, CourseVodData } from '@/types';
 
 export default defineBackground({
   main() {
