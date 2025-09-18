@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { loadSettings, getSetting, setSetting } from '@/libs/settings';
 import { Link } from 'react-router';
+import { ExtensionSettings } from '@/types/settings';
 
 export default function SettingsPanel() {
-  const [settings, setSettingsState] = useState({
+  const [settings, setSettingsState] = useState<ExtensionSettings>({
     joyrideBlockEnabled: true,
     modalBlockEnabled: true,
+    courseMultiSection: false,
   });
 
   useEffect(() => {
@@ -13,6 +15,7 @@ export default function SettingsPanel() {
       setSettingsState({
         joyrideBlockEnabled: await getSetting('joyrideBlockEnabled'),
         modalBlockEnabled: await getSetting('modalBlockEnabled'),
+        courseMultiSection: await getSetting('courseMultiSection'),
       });
     });
   }, []);
@@ -51,6 +54,20 @@ export default function SettingsPanel() {
           onClick={() => handleToggle('modalBlockEnabled')}
           className={`w-12 h-6 flex items-center rounded-full p-1 duration-300 ease-in-out
             ${settings.modalBlockEnabled ? 'bg-blue-500 justify-end' : 'bg-gray-300 justify-start'}`}
+        >
+          <span className="w-4 h-4 bg-white rounded-full shadow-md"></span>
+        </button>
+      </div>
+
+      {/* 주차별 보기 확장 */}
+      <div className="flex items-center justify-between w-full">
+        <span className="text-base">
+          주차별 보기 확장 <span className="text-green-600 font-semibold">(Beta)</span>
+        </span>
+        <button
+          onClick={() => handleToggle('courseMultiSection')}
+          className={`w-12 h-6 flex items-center rounded-full p-1 duration-300 ease-in-out
+            ${settings.courseMultiSection ? 'bg-blue-500 justify-end' : 'bg-gray-300 justify-start'}`}
         >
           <span className="w-4 h-4 bg-white rounded-full shadow-md"></span>
         </button>
