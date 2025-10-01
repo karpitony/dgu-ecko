@@ -1,10 +1,18 @@
 import { getSetting } from '@/libs/settings';
 
+/** 학기 시작일 (개강일) */
+const SEMESTER_START_DATE = new Date('2025-09-01T00:00:00');
+const TOTAL_WEEKS = 16;
+
 export default defineContentScript({
   matches: ['https://eclass.dongguk.edu/course/view.php?id=*'],
   registration: 'manifest',
   async main() {
     console.log('[이코] 스크립트 로드됨.');
+
+    if (await getSetting('tempActiveTabSelector')) {
+      ensureActiveTabByDate(5);
+    }
 
     if (await getSetting('courseMultiSection')) {
       console.log('[이코] 설정이 활성화되어 있습니다. 주차 확장 기능을 시작합니다.');
@@ -15,6 +23,78 @@ export default defineContentScript({
     }
   },
 });
+
+/**
+ * 오늘 날짜를 기준으로 현재 몇 주차인지 계산합니다.
+ * @param startDate 개강일
+ * @returns 현재 주차 (1 ~ 16)
+ */
+function calculateCurrentWeek(startDate: Date): number {
+  const today = new Date();
+
+  // 개강일 이전이면 1주차로 간주
+  if (today < startDate) {
+    return 1;
+  }
+
+  const diffMillis = today.getTime() - startDate.getTime();
+  const diffDays = diffMillis / (1000 * 60 * 60 * 24);
+  const currentWeek = Math.floor(diffDays / 7) + 1;
+
+  // 총 주차 범위를 벗어나면 1주차로 간주
+  if (currentWeek > TOTAL_WEEKS || currentWeek < 1) {
+    return 1;
+  }
+
+  return currentWeek;
+}
+
+/**
+ * Active Tab이 없을 경우, 오늘 날짜를 기준으로 올바른 주차 탭을 찾아 활성화합니다.
+ * 탭 컨테이너가 로드될 때까지 재시도하는 로직이 포함되어 있습니다.
+ * @param maxAttempts 최대 시도 횟수
+ */
+function ensureActiveTabByDate(maxAttempts: number): void {
+  // 주차 탭 컨테이너가 로드되었는지 먼저 확인
+  const tabContainer = document.querySelector('ul.section_tab');
+
+  if (!tabContainer) {
+    if (maxAttempts > 0) {
+      console.log(`[이코] 주차 탭 컨테이너 대기 중... ${maxAttempts}회 남음. (날짜 기반 활성화)`);
+      setTimeout(() => ensureActiveTabByDate(maxAttempts - 1), 100);
+    } else {
+      console.error('[이코] 주차 탭 컨테이너를 찾지 못해 날짜 기반 탭 활성화에 실패했습니다.');
+    }
+    return;
+  }
+
+  // 현재 활성화된 탭이 있는지 확인
+  const activeTabExists = document.querySelector('ul.section_tab > li.active') !== null;
+  if (activeTabExists) {
+    console.log('[이코] 이미 활성화된 탭이 있어 날짜 기반 활성화를 건너뜁니다.');
+    return;
+  }
+
+  // 활성화된 탭이 없으면 날짜 기준으로 현재 주차 계산
+  console.log('[이코] 활성화된 탭이 없어 날짜 기반으로 현재 주차 탭을 활성화합니다.');
+  const currentWeek = calculateCurrentWeek(SEMESTER_START_DATE);
+  const targetText = `${currentWeek}주차`;
+
+  // 모든 탭을 가져와서 텍스트 내용이 일치하는 탭을 탐색
+  const allTabs = Array.from(document.querySelectorAll<HTMLLIElement>('ul.section_tab > li'));
+  const targetTab = allTabs.find(tab => {
+    const link = tab.querySelector('a');
+    return link && link.textContent?.trim() === targetText;
+  });
+
+  // 탭을 찾았다면 'active' 클래스를 추가
+  if (targetTab) {
+    targetTab.click();
+    console.log(`[이코] '${targetText}' 탭(ID: #${targetTab.id})을 활성화했습니다.`);
+  } else {
+    console.warn(`[이코] 텍스트가 '${targetText}'인 주차 탭을 찾지 못했습니다.`);
+  }
+}
 
 /**
  * 최초 페이지 로드 시 active 탭이 준비될 때까지 기다렸다가 확장 함수를 실행합니다.

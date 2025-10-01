@@ -8,6 +8,7 @@ export default function SettingsPanel() {
     joyrideBlockEnabled: true,
     modalBlockEnabled: true,
     courseMultiSection: false,
+    tempActiveTabSelector: true,
   });
 
   useEffect(() => {
@@ -16,6 +17,7 @@ export default function SettingsPanel() {
         joyrideBlockEnabled: await getSetting('joyrideBlockEnabled'),
         modalBlockEnabled: await getSetting('modalBlockEnabled'),
         courseMultiSection: await getSetting('courseMultiSection'),
+        tempActiveTabSelector: await getSetting('tempActiveTabSelector'),
       });
     });
   }, []);
@@ -68,6 +70,20 @@ export default function SettingsPanel() {
           onClick={() => handleToggle('courseMultiSection')}
           className={`w-12 h-6 flex items-center rounded-full p-1 duration-300 ease-in-out
             ${settings.courseMultiSection ? 'bg-blue-500 justify-end' : 'bg-gray-300 justify-start'}`}
+        >
+          <span className="w-4 h-4 bg-white rounded-full shadow-md"></span>
+        </button>
+      </div>
+
+      {/* 오늘 날짜 기준 주차 탭 선택 */}
+      <div className="flex items-center justify-between w-full">
+        <span className="text-base">
+          오늘 날짜 기준 주차 탭 선택 <span className="text-green-600 font-semibold">(Beta)</span>
+        </span>
+        <button
+          onClick={() => handleToggle('tempActiveTabSelector')}
+          className={`w-12 h-6 flex items-center rounded-full p-1 duration-300 ease-in-out
+            ${settings.tempActiveTabSelector ? 'bg-blue-500 justify-end' : 'bg-gray-300 justify-start'}`}
         >
           <span className="w-4 h-4 bg-white rounded-full shadow-md"></span>
         </button>

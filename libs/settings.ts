@@ -4,6 +4,7 @@ const defaultSettings: ExtensionSettings = {
   joyrideBlockEnabled: true,
   modalBlockEnabled: true,
   courseMultiSection: false,
+  tempActiveTabSelector: true,
 };
 
 /**
