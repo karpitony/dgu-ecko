@@ -1,8 +1,12 @@
 import { useEffect, useState, useCallback } from 'react';
-import type { CourseAssignmentData } from '@sidepanel/types/courseAssignmentData';
+import type { CourseAssignmentCache } from '@/types/storage';
+import type {
+  GetCourseAssignmentDataMessage,
+  AllCourseAssignmentDataMessage,
+} from '@/types/messages';
 
 export function useCourseAssignments() {
-  const [courses, setCourses] = useState<CourseAssignmentData[]>([]);
+  const [courses, setCourses] = useState<CourseAssignmentCache[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const isChromeRuntime = typeof chrome !== 'undefined' && !!chrome.runtime?.sendMessage;
@@ -14,7 +18,12 @@ export function useCourseAssignments() {
       setLoading(true);
       setError(null);
 
-      chrome.runtime.sendMessage({ type: 'GET_COURSE_ASSIGNMENT_DATA', forceRefresh }, res => {
+      const message: GetCourseAssignmentDataMessage = {
+        type: 'GET_COURSE_ASSIGNMENT_DATA',
+        forceRefresh,
+      };
+
+      chrome.runtime.sendMessage(message, res => {
         if (res?.error) {
           console.error('백그라운드 요청 오류:', res.error);
           setError(res.error);
@@ -32,7 +41,7 @@ export function useCourseAssignments() {
   useEffect(() => {
     if (!isChromeRuntime) return;
 
-    const handleMessage = (msg: { type: string; payload: CourseAssignmentData[] }) => {
+    const handleMessage = (msg: AllCourseAssignmentDataMessage) => {
       if (msg.type !== 'ALL_COURSE_ASSIGNMENT_DATA') return;
       setCourses(msg.payload);
       setLoading(false);

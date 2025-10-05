@@ -24,7 +24,16 @@ export default defineContentScript({
           button.style.gap = '6px';
 
           button.onclick = () => {
-            chrome.runtime.sendMessage({ action: 'openSidePanel' });
+            console.log('[이코] 사이드패널 열기 버튼 클릭됨');
+            chrome.runtime.sendMessage({ action: 'openSidePanel' }, response => {
+              if (chrome.runtime.lastError) {
+                console.error('[이코] 메시지 전송 실패:', chrome.runtime.lastError);
+              } else if (response?.success) {
+                console.log('[이코] 사이드패널 열기 성공');
+              } else {
+                console.error('[이코] 사이드패널 열기 실패:', response?.error);
+              }
+            });
           };
 
           navItem.appendChild(button);
