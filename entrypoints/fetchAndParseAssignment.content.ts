@@ -49,13 +49,13 @@ export default defineContentScript({
       }
     }
 
-    function parseAssignmentsFromHtml(html: string): Assignment[] {
+    function parseAssignmentsFromHtml(html: string, courseTitle: string): Assignment[] {
       const parser = new DOMParser();
       const doc = parser.parseFromString(html, 'text/html');
 
       const tableRows = doc.querySelectorAll('table.generaltable tbody tr');
       if (tableRows.length === 0) {
-        console.warn('[이코] ⚠️ 과제 항목을 찾을 수 없습니다.');
+        console.warn(`[이코] ⚠️ ${courseTitle} 과제 항목을 찾을 수 없습니다.`);
         return [];
       }
 
@@ -92,7 +92,7 @@ export default defineContentScript({
       const html = await fetchAssignmentPage(courseId);
       if (!html) return null;
 
-      const assignments = parseAssignmentsFromHtml(html);
+      const assignments = parseAssignmentsFromHtml(html, courseTitle);
       console.log(`[이코] ${courseTitle}(${courseId}) 파싱된 과제 목록:`, assignments);
 
       const courseAssignmentData: CourseAssignmentData = {
@@ -106,7 +106,10 @@ export default defineContentScript({
         { type: 'COURSE_ASSIGNMENT_DATA', data: courseAssignmentData },
         response => {
           if (chrome.runtime.lastError) {
-            console.warn('[이코] ⚠️ 과제 데이터 전송 실패:', chrome.runtime.lastError.message);
+            console.warn(
+              `[이코] ⚠️  ${courseTitle} 과제 데이터 전송 실패:`,
+              chrome.runtime.lastError.message,
+            );
           } else {
             console.log('[이코] 과제 데이터 전송 성공:', response);
           }

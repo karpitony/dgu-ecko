@@ -44,13 +44,13 @@ export default defineContentScript({
       }
     }
 
-    function parseVodFromHtml(html: string): VodLecture[] {
+    function parseVodFromHtml(html: string, courseTitle: string): VodLecture[] {
       const parser = new DOMParser();
       const doc = parser.parseFromString(html, 'text/html');
 
       const vodElements = doc.querySelectorAll('li.activity.vod');
       if (vodElements.length === 0) {
-        console.warn('[이코] ⚠️ 사이버 강의(VOD)를 찾을 수 없습니다.');
+        console.warn(`[이코] ⚠️ ${courseTitle} 사이버 강의(VOD)를 찾을 수 없습니다.`);
         return [];
       }
 
@@ -106,7 +106,7 @@ export default defineContentScript({
       const html = await fetchCoursePage(courseId);
       if (!html) return null;
 
-      const lectures = parseVodFromHtml(html);
+      const lectures = parseVodFromHtml(html, courseTitle);
       console.log(`[이코] ${courseTitle}(${courseId}) 파싱된 사이버 강의 목록:`, lectures);
       const courseVodData: CourseVodData = {
         courseId,

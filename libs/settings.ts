@@ -3,7 +3,7 @@ import { ExtensionSettings, SettingKey } from '@/types/settings';
 const defaultSettings: ExtensionSettings = {
   joyrideBlockEnabled: true,
   modalBlockEnabled: true,
-  courseMultiSection: false,
+  courseMultiSection: true,
   tempActiveTabSelector: true,
 };
 

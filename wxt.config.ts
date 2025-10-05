@@ -3,7 +3,12 @@ import tailwindcss from '@tailwindcss/vite';
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({
-  modules: ['@wxt-dev/module-react'],
+  modules: ['@wxt-dev/module-react', '@wxt-dev/auto-icons'],
+  autoIcons: {
+    baseIconPath: 'public/icons/icon128.png',
+    enabled: true,
+    developmentIndicator: 'overlay',
+  },
   vite: () => ({
     plugins: [tailwindcss()],
     resolve: {
