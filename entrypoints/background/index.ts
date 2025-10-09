@@ -136,16 +136,57 @@ export default defineBackground({
 
         if (!isEclassDomain) {
           // eclass가 아니면 사이드패널에 닫기 메시지 전송
-          console.log('[이코] eclass 도메인이 아닌 탭으로 전환됨. 사이드패널 닫기');
-          chrome.runtime.sendMessage({ type: 'CLOSE_SIDE_PANEL' }).catch(err => {
+          console.log('[이코] 사이드패널 닫기:', tab.url);
+          chrome.runtime.sendMessage({ type: 'CLOSE_SIDE_PANEL' }).catch(() => {
             // 사이드패널이 열려있지 않으면 에러 발생 가능, 무시
-            console.log('[이코] 사이드패널이 열려있지 않음');
           });
         }
       } catch (error) {
         console.error('[이코] 탭 전환 처리 오류:', error);
       }
     });
+
+    console.log('[이코] 탭 전환 감지 리스너 등록 완료');
+
+    // ============ URL 변경 감지 (같은 탭 내에서) ============
+
+    chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+      try {
+        // URL이 변경되었을 때만 처리
+        if (!changeInfo.url) {
+          return;
+        }
+
+        // 설정 확인
+        const settings = await chrome.storage.sync.get('settings');
+        const autoClose = settings.settings?.autoCloseSidePanelOnTabChange ?? true;
+
+        if (!autoClose) {
+          return;
+        }
+
+        // 현재 활성화된 탭인지 확인
+        const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (!activeTab || activeTab.id !== tabId) {
+          return; // 백그라운드 탭의 URL 변경은 무시
+        }
+
+        // eclass 도메인 체크
+        const isEclassDomain = changeInfo.url.includes('eclass.dongguk.edu');
+
+        if (!isEclassDomain) {
+          // eclass가 아니면 사이드패널에 닫기 메시지 전송
+          console.log('[이코] 사이드패널 닫기:', changeInfo.url);
+          chrome.runtime.sendMessage({ type: 'CLOSE_SIDE_PANEL' }).catch(() => {
+            // 사이드패널이 열려있지 않으면 에러 발생 가능, 무시
+          });
+        }
+      } catch (error) {
+        console.error('[이코] URL 변경 처리 오류:', error);
+      }
+    });
+
+    console.log('[이코] URL 변경 감지 리스너 등록 완료');
 
     console.log('[이코] Background script running...');
   },
