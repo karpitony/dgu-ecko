@@ -112,6 +112,41 @@ export default defineBackground({
 
     messageHandler.listen();
 
+    // ============ 탭 전환 감지 및 사이드패널 자동 닫기 ============
+
+    chrome.tabs.onActivated.addListener(async activeInfo => {
+      try {
+        // 설정 확인
+        const settings = await chrome.storage.sync.get('settings');
+        const autoClose = settings.settings?.autoCloseSidePanelOnTabChange ?? true;
+
+        if (!autoClose) {
+          return; // 설정이 꺼져 있으면 아무것도 하지 않음
+        }
+
+        // 활성화된 탭의 정보 가져오기
+        const tab = await chrome.tabs.get(activeInfo.tabId);
+
+        if (!tab.url) {
+          return;
+        }
+
+        // eclass 도메인 체크
+        const isEclassDomain = tab.url.includes('eclass.dongguk.edu');
+
+        if (!isEclassDomain) {
+          // eclass가 아니면 사이드패널에 닫기 메시지 전송
+          console.log('[이코] eclass 도메인이 아닌 탭으로 전환됨. 사이드패널 닫기');
+          chrome.runtime.sendMessage({ type: 'CLOSE_SIDE_PANEL' }).catch(err => {
+            // 사이드패널이 열려있지 않으면 에러 발생 가능, 무시
+            console.log('[이코] 사이드패널이 열려있지 않음');
+          });
+        }
+      } catch (error) {
+        console.error('[이코] 탭 전환 처리 오류:', error);
+      }
+    });
+
     console.log('[이코] Background script running...');
   },
 });

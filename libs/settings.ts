@@ -5,6 +5,7 @@ const defaultSettings: ExtensionSettings = {
   modalBlockEnabled: true,
   courseMultiSection: true,
   tempActiveTabSelector: true,
+  autoCloseSidePanelOnTabChange: true,
 };
 
 /**

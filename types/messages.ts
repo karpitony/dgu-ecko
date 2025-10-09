@@ -32,6 +32,10 @@ export interface OpenSidePanelMessage {
   action: 'openSidePanel';
 }
 
+export interface CloseSidePanelMessage {
+  type: 'CLOSE_SIDE_PANEL';
+}
+
 // ============ 응답 메시지 타입 ============
 
 export interface CourseIdsMessage {
@@ -87,6 +91,7 @@ export type OutgoingMessage =
   | ParseVodForIdMessage
   | ParseAssignmentForIdMessage
   | AllCourseVodDataMessage
-  | AllCourseAssignmentDataMessage;
+  | AllCourseAssignmentDataMessage
+  | CloseSidePanelMessage;
 
 export type MessagePayload = IncomingMessage | OutgoingMessage;
