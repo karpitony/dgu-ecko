@@ -2,7 +2,7 @@ import type { VodLecture, CourseVodData } from '@/types';
 import type { CourseVodDataMessage, ParseVodForIdMessage } from '@/types/messages';
 
 /**
- * 이클래스 사이버 강의 정보를 가져오고 파싱
+ * 이클래스 사이버 강의(VOD/eLearning) 정보를 가져오고 파싱
  */
 
 export default defineContentScript({
@@ -42,56 +42,70 @@ export default defineContentScript({
       }
     }
 
+    /**
+     * VOD 또는 eLearning 공통 요소 파싱
+     */
+    function parseLectureElement(el: Element, type: 'vod' | 'econtents'): VodLecture {
+      const title =
+        el
+          .querySelector('.instancename')
+          ?.textContent?.trim()
+          .replace(/\s+(동영상|e-Learning)$/, '') ?? '';
+
+      const viewAnchor = el.querySelector<HTMLAnchorElement>('.activityinstance a');
+      const href = viewAnchor?.getAttribute('href') ?? '';
+      const onclick = viewAnchor?.getAttribute('onclick') ?? '';
+      const vodId = href.match(/id=(\d+)/)?.[1] ?? '';
+
+      // viewer.php?id=... 또는 player.php?id=... 형태 모두 지원
+      const viewerUrl =
+        onclick.match(/window\.open\('([^']+(viewer|player)\.php\?id=\d+)'/)?.[1] ?? '';
+
+      const dateText = el.querySelector('.displayoptions .text-ubstrap')?.textContent ?? '';
+      const [startRaw, endRaw] = dateText.match(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/g) ?? [];
+      const start = startRaw ?? '';
+      const end = endRaw ?? '';
+      const lateEnd =
+        dateText.match(/\(지각 ?: (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\)/)?.[1] ?? '';
+
+      const completed =
+        (el.querySelector('.autocompletion img') as HTMLImageElement)?.title.includes('완료함') ??
+        false;
+      const week = title.match(/^(\d+주차)/)?.[1] ?? '';
+
+      return {
+        week,
+        title,
+        vodId,
+        viewUrl: href,
+        viewerUrl,
+        period: { start, end, lateEnd },
+        completed,
+        type, // vod / econtents 구분 추가
+      } as VodLecture;
+    }
+
+    /**
+     * HTML에서 모든 강의(VOD, eLearning) 파싱
+     */
     function parseVodFromHtml(html: string, courseTitle: string): VodLecture[] {
       const parser = new DOMParser();
       const doc = parser.parseFromString(html, 'text/html');
 
       const vodElements = doc.querySelectorAll('li.activity.vod');
-      if (vodElements.length === 0) {
-        console.warn(`[이코] ⚠️ ${courseTitle} 사이버 강의(VOD)를 찾을 수 없습니다.`);
+      const elearningElements = doc.querySelectorAll('li.activity.econtents');
+
+      if (vodElements.length === 0 && elearningElements.length === 0) {
+        console.warn(`[이코] ⚠️ ${courseTitle} 강의(VOD/eLearning) 콘텐츠를 찾을 수 없습니다.`);
         return [];
       }
 
-      return Array.from(vodElements).map<VodLecture>(el => {
-        const title =
-          el
-            .querySelector('.instancename')
-            ?.textContent?.trim()
-            .replace(/\s+동영상$/, '') ?? '';
+      const vods = Array.from(vodElements).map(el => parseLectureElement(el, 'vod'));
+      const elearnings = Array.from(elearningElements).map(el =>
+        parseLectureElement(el, 'econtents'),
+      );
 
-        const viewAnchor = el.querySelector('.activityinstance a');
-        const href = viewAnchor?.getAttribute('href') ?? '';
-        const onclick = viewAnchor?.getAttribute('onclick') ?? '';
-        const vodId = href.match(/id=(\d+)/)?.[1] ?? '';
-
-        const viewerUrl = onclick.match(/window\.open\('([^']+viewer\.php\?id=\d+)'/)?.[1] ?? '';
-
-        const dateText = el.querySelector('.displayoptions .text-ubstrap')?.textContent ?? '';
-        const [startRaw, endRaw] = dateText.match(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/g) ?? [];
-        const start = startRaw ?? '';
-        const end = endRaw ?? '';
-        const lateEnd =
-          dateText.match(/\(지각 ?: (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\)/)?.[1] ?? '';
-
-        const completed =
-          (el.querySelector('.autocompletion img') as HTMLImageElement)?.title.includes('완료함') ??
-          false;
-        const week = title.match(/^(\d+주차)/)?.[1] ?? '';
-
-        return {
-          week,
-          title,
-          vodId,
-          viewUrl: href,
-          viewerUrl,
-          period: {
-            start,
-            end,
-            lateEnd,
-          },
-          completed,
-        };
-      });
+      return [...vods, ...elearnings];
     }
 
     /**
@@ -105,7 +119,7 @@ export default defineContentScript({
       if (!html) return null;
 
       const lectures = parseVodFromHtml(html, courseTitle);
-      console.log(`[이코] ${courseTitle}(${courseId}) 파싱된 사이버 강의 목록:`, lectures);
+      console.log(`[이코] ${courseTitle}(${courseId}) 파싱된 강의 목록:`, lectures);
       const courseVodData: CourseVodData = {
         courseId,
         courseTitle,
@@ -123,17 +137,17 @@ export default defineContentScript({
     }
 
     (() => {
-      chrome.runtime.onMessage.addListener((message: ParseVodForIdMessage, sender, sendResponse) => {
-        if (message.type === 'PARSE_VOD_FOR_ID' && message.courseId && message.courseTitle) {
-          console.log(
-            `[이코] 사이버 강의 정보 파싱 요청: ${message.courseTitle}(${message.courseId})`,
-          );
-          fetchAndParseVod(message.courseId, message.courseTitle)
-            .then(() => sendResponse({ ok: true }))
-            .catch(err => sendResponse({ ok: false, error: err.message }));
-          return true; // 비동기 처리를 위해 반드시 필요
-        }
-      });
+      chrome.runtime.onMessage.addListener(
+        (message: ParseVodForIdMessage, sender, sendResponse) => {
+          if (message.type === 'PARSE_VOD_FOR_ID' && message.courseId && message.courseTitle) {
+            console.log(`[이코] 강의 정보 파싱 요청: ${message.courseTitle}(${message.courseId})`);
+            fetchAndParseVod(message.courseId, message.courseTitle)
+              .then(() => sendResponse({ ok: true }))
+              .catch(err => sendResponse({ ok: false, error: err.message }));
+            return true; // 비동기 처리를 위해 반드시 필요
+          }
+        },
+      );
     })();
   },
 });
