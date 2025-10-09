@@ -9,6 +9,7 @@ export default function SettingsPanel() {
     modalBlockEnabled: true,
     courseMultiSection: false,
     tempActiveTabSelector: true,
+    autoCloseSidePanelOnTabChange: true,
   });
 
   useEffect(() => {
@@ -18,6 +19,7 @@ export default function SettingsPanel() {
         modalBlockEnabled: await getSetting('modalBlockEnabled'),
         courseMultiSection: await getSetting('courseMultiSection'),
         tempActiveTabSelector: await getSetting('tempActiveTabSelector'),
+        autoCloseSidePanelOnTabChange: await getSetting('autoCloseSidePanelOnTabChange'),
       });
     });
   }, []);
@@ -84,6 +86,18 @@ export default function SettingsPanel() {
           onClick={() => handleToggle('tempActiveTabSelector')}
           className={`w-12 h-6 flex items-center rounded-full p-1 duration-300 ease-in-out
             ${settings.tempActiveTabSelector ? 'bg-blue-500 justify-end' : 'bg-gray-300 justify-start'}`}
+        >
+          <span className="w-4 h-4 bg-white rounded-full shadow-md"></span>
+        </button>
+      </div>
+
+      {/* 탭 전환시 자동으로 닫히기 */}
+      <div className="flex items-center justify-between w-full">
+        <span className="text-base">탭 전환시 자동으로 닫히기</span>
+        <button
+          onClick={() => handleToggle('autoCloseSidePanelOnTabChange')}
+          className={`w-12 h-6 flex items-center rounded-full p-1 duration-300 ease-in-out
+            ${settings.autoCloseSidePanelOnTabChange ? 'bg-blue-500 justify-end' : 'bg-gray-300 justify-start'}`}
         >
           <span className="w-4 h-4 bg-white rounded-full shadow-md"></span>
         </button>

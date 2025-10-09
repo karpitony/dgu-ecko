@@ -1,7 +1,5 @@
-import { VodLecture as ImportVodLecture, CourseVodData as ImportCourseVodData } from '../types';
-
-type VodLecture = ImportVodLecture;
-type CourseVodData = ImportCourseVodData;
+import type { VodLecture, CourseVodData } from '@/types';
+import type { CourseVodDataMessage, ParseVodForIdMessage } from '@/types/messages';
 
 /**
  * 이클래스 사이버 강의 정보를 가져오고 파싱
@@ -114,12 +112,18 @@ export default defineContentScript({
         fetchedAt: new Date().toISOString(),
         lectures,
       };
-      chrome.runtime.sendMessage({ type: 'COURSE_VOD_DATA', data: courseVodData });
+
+      const message: CourseVodDataMessage = {
+        type: 'COURSE_VOD_DATA',
+        data: courseVodData,
+      };
+
+      chrome.runtime.sendMessage(message);
       return lectures;
     }
 
     (() => {
-      chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      chrome.runtime.onMessage.addListener((message: ParseVodForIdMessage, sender, sendResponse) => {
         if (message.type === 'PARSE_VOD_FOR_ID' && message.courseId && message.courseTitle) {
           console.log(
             `[이코] 사이버 강의 정보 파싱 요청: ${message.courseTitle}(${message.courseId})`,

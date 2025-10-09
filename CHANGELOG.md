@@ -1,5 +1,13 @@
 # Changelog
 
+## `v0.6.0` (2025-10-09)
+
+- Background 스크립트 레이어드 아키텍처 리팩토링 (Services, Managers, Repositories 레이어 분리)
+- Repository 패턴을 통한 Chrome Storage 추상화 및 캐싱 시스템 개선
+- CONTRIBUTING.md 문서 추가
+- README.md 프로젝트 소개와 기여 부분 분리
+- 탭 전환시 사이드패널이 자동으로 닫히는 기능 추가
+
 ## `v0.5.1` (2025-10-02)
 
 - 강의실 페이지(`https://eclass.dongguk.edu/course/view.php?id=`)에서 현재 주차 탭이 보이지 않는 문제 수정

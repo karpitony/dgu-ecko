@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
-import type { CourseVodData } from '@sidepanel/types/courseVodData';
+import type { CourseVodData } from '@/types';
+import type { GetCourseVodDataMessage, AllCourseVodDataMessage } from '@/types/messages';
 import dummyData from '@sidepanel/assets/dummyVod.json';
 
 export function useCourseVod() {
@@ -17,7 +18,12 @@ export function useCourseVod() {
       setLoading(true);
       setError(null);
 
-      chrome.runtime.sendMessage({ type: 'GET_COURSE_VOD_DATA', forceRefresh }, res => {
+      const message: GetCourseVodDataMessage = {
+        type: 'GET_COURSE_VOD_DATA',
+        forceRefresh,
+      };
+
+      chrome.runtime.sendMessage(message, res => {
         const vodData: CourseVodData | undefined = res?.data;
         if (!vodData) {
           setError('데이터를 불러오지 못했습니다.');
@@ -59,7 +65,7 @@ export function useCourseVod() {
   useEffect(() => {
     if (!isChromeRuntime) return;
 
-    const handleMessage = (msg: { type: string; payload: CourseVodData[] }) => {
+    const handleMessage = (msg: AllCourseVodDataMessage) => {
       if (msg.type !== 'ALL_COURSE_VOD_DATA') return;
 
       const next = msg.payload.map<CourseVodData>(d => ({

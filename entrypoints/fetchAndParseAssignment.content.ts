@@ -1,15 +1,11 @@
+import type { CourseAssignmentCache } from '@/types/storage';
+import type { CourseAssignmentDataMessage, ParseAssignmentForIdMessage } from '@/types/messages';
+
 interface Assignment {
   title: string;
   url: string;
   due: string | null; // "-"인 경우 null
   status: string; // 제출 완료, 미제출 등
-}
-
-interface CourseAssignmentData {
-  courseId: string;
-  courseTitle: string;
-  fetchedAt: string; // YYYY-MM-DD
-  assignments: Assignment[];
 }
 
 export default defineContentScript({
@@ -95,45 +91,53 @@ export default defineContentScript({
       const assignments = parseAssignmentsFromHtml(html, courseTitle);
       console.log(`[이코] ${courseTitle}(${courseId}) 파싱된 과제 목록:`, assignments);
 
-      const courseAssignmentData: CourseAssignmentData = {
+      const courseAssignmentData: CourseAssignmentCache = {
         courseId,
         courseTitle,
         fetchedAt: new Date().toISOString(),
         assignments,
       };
 
-      chrome.runtime.sendMessage(
-        { type: 'COURSE_ASSIGNMENT_DATA', data: courseAssignmentData },
-        response => {
-          if (chrome.runtime.lastError) {
-            console.warn(
-              `[이코] ⚠️  ${courseTitle} 과제 데이터 전송 실패:`,
-              chrome.runtime.lastError.message,
-            );
-          } else {
-            console.log('[이코] 과제 데이터 전송 성공:', response);
-          }
-        },
-      );
+      const message: CourseAssignmentDataMessage = {
+        type: 'COURSE_ASSIGNMENT_DATA',
+        data: courseAssignmentData,
+      };
+
+      chrome.runtime.sendMessage(message, response => {
+        if (chrome.runtime.lastError) {
+          console.warn(
+            `[이코] ⚠️  ${courseTitle} 과제 데이터 전송 실패:`,
+            chrome.runtime.lastError.message,
+          );
+        } else {
+          console.log('[이코] 과제 데이터 전송 성공:', response);
+        }
+      });
       return assignments;
     }
 
     // 메시지 리스너
     (() => {
-      chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-        if (message.type === 'PARSE_ASSIGNMENT_FOR_ID' && message.courseId && message.courseTitle) {
-          console.log(`[이코] 과제 정보 파싱 요청: ${message.courseTitle}(${message.courseId})`);
-          fetchAndParseAssignment(message.courseId, message.courseTitle)
-            .then(() => {
-              sendResponse({ ok: true });
-            })
-            .catch(err => {
-              console.error('[이코] 과제 파싱 실패:', err);
-              sendResponse({ ok: false, error: err.message });
-            });
-          return true;
-        }
-      });
+      chrome.runtime.onMessage.addListener(
+        (message: ParseAssignmentForIdMessage, sender, sendResponse) => {
+          if (
+            message.type === 'PARSE_ASSIGNMENT_FOR_ID' &&
+            message.courseId &&
+            message.courseTitle
+          ) {
+            console.log(`[이코] 과제 정보 파싱 요청: ${message.courseTitle}(${message.courseId})`);
+            fetchAndParseAssignment(message.courseId, message.courseTitle)
+              .then(() => {
+                sendResponse({ ok: true });
+              })
+              .catch(err => {
+                console.error('[이코] 과제 파싱 실패:', err);
+                sendResponse({ ok: false, error: err.message });
+              });
+            return true;
+          }
+        },
+      );
     })();
   },
 });
