@@ -4,6 +4,7 @@ export interface ExtensionSettings {
   courseMultiSection: boolean;
   tempActiveTabSelector: boolean;
   autoCloseSidePanelOnTabChange: boolean;
+  notificationBadgeFixEnabled: boolean;
 }
 
 export type SettingKey = keyof ExtensionSettings;
