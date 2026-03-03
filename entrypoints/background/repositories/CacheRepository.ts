@@ -17,13 +17,12 @@ export class CacheRepository {
 
     if (!cache || !cache.data) return null;
 
-    // 만료 여부와 관계없이 데이터가 있으면 반환 (백업용)
     if (!this.storage.isCourseIdCacheValid(cache.fetchedAt)) {
-      console.warn('[이코] courseIds 캐시 만료되었지만 데이터는 사용 가능');
-    } else {
-      console.log('[이코] 스토리지에서 courseIds 불러옴');
+      console.log('[이코] courseIds 캐시 만료');
+      return null;
     }
 
+    console.log('[이코] 스토리지에서 courseIds 불러옴');
     return cache.data;
   }
 

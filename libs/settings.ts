@@ -6,6 +6,7 @@ const defaultSettings: ExtensionSettings = {
   courseMultiSection: true,
   tempActiveTabSelector: true,
   autoCloseSidePanelOnTabChange: true,
+  notificationBadgeFixEnabled: true,
 };
 
 /**
