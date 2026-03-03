@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { loadSettings, getSetting, setSetting } from '@/libs/settings';
+import { defaultSettings, loadSettings, getSetting, setSetting } from '@/libs/settings';
 import { Link } from 'react-router';
 import { ExtensionSettings } from '@/types/settings';
 
@@ -15,14 +15,7 @@ function BetaBadge() {
 }
 
 export default function SettingsPanel() {
-  const [settings, setSettingsState] = useState<ExtensionSettings>({
-    joyrideBlockEnabled: true,
-    modalBlockEnabled: true,
-    courseMultiSection: false,
-    tempActiveTabSelector: true,
-    autoCloseSidePanelOnTabChange: true,
-    notificationBadgeFixEnabled: true,
-  });
+  const [settings, setSettingsState] = useState<ExtensionSettings>(defaultSettings);
 
   useEffect(() => {
     loadSettings().then(async () => {

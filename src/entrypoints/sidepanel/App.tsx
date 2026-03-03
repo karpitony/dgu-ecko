@@ -5,7 +5,15 @@ import Vod from '@sidepanel/pages/Vod';
 import Assignment from '@sidepanel/pages/Assignment';
 import Settings from '@sidepanel/pages/Settings';
 
-export default function Routers() {
+export default function App() {
+  return (
+    <>
+      <Routers />
+    </>
+  );
+}
+
+function Routers() {
   const router = createBrowserRouter(
     [
       {

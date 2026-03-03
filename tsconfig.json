@@ -6,9 +6,9 @@
 
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"],
-      "@sidepanel/*": ["entrypoints/sidepanel/*"],
-      "@background/*": ["entrypoints/background/*"]
+      "@/*": ["src/*"],
+      "@sidepanel/*": ["src/entrypoints/sidepanel/*"],
+      "@background/*": ["src/entrypoints/background/*"]
     }
   }
 }

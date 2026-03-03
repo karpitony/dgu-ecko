@@ -2,7 +2,7 @@
  * 사이드 패널 관리 서비스
  */
 
-import type { ISidePanelService } from '../types/services';
+import type { ISidePanelService } from '@/types/services';
 
 export class SidePanelService implements ISidePanelService {
   /**

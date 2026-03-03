@@ -8,7 +8,7 @@ import { ContentScriptManager } from '../managers/ContentScriptManager';
 import { TabManager } from '../managers/TabManager';
 import { CourseService } from './CourseService';
 import { CONTENT_SCRIPTS, MARKER_IDS } from '@/constants/background';
-import type { IAssignmentService } from '../types/services';
+import type { IAssignmentService } from '@/types/services';
 import type { CourseAssignmentCache } from '@/types/storage';
 
 export class AssignmentService implements IAssignmentService {

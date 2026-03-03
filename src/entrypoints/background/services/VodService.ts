@@ -8,7 +8,7 @@ import { ContentScriptManager } from '../managers/ContentScriptManager';
 import { TabManager } from '../managers/TabManager';
 import { CourseService } from './CourseService';
 import { CONTENT_SCRIPTS, MARKER_IDS } from '@/constants/background';
-import type { IVodService } from '../types/services';
+import type { IVodService } from '@/types/services';
 
 export class VodService implements IVodService {
   private totalVodCount = 0;

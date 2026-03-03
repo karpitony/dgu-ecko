@@ -14,6 +14,7 @@ import { CourseService } from './services/CourseService';
 import { VodService } from './services/VodService';
 import { AssignmentService } from './services/AssignmentService';
 import { SidePanelService } from './services/SidePanelService';
+import { getSetting } from '@/libs/settings';
 
 export default defineBackground({
   main() {
@@ -117,8 +118,7 @@ export default defineBackground({
     chrome.tabs.onActivated.addListener(async activeInfo => {
       try {
         // 설정 확인
-        const settings = await chrome.storage.sync.get('settings');
-        const autoClose = settings.settings?.autoCloseSidePanelOnTabChange ?? true;
+        const autoClose = await getSetting('autoCloseSidePanelOnTabChange');
 
         if (!autoClose) {
           return; // 설정이 꺼져 있으면 아무것도 하지 않음
@@ -158,8 +158,7 @@ export default defineBackground({
         }
 
         // 설정 확인
-        const settings = await chrome.storage.sync.get('settings');
-        const autoClose = settings.settings?.autoCloseSidePanelOnTabChange ?? true;
+        const autoClose = await getSetting('autoCloseSidePanelOnTabChange');
 
         if (!autoClose) {
           return;

@@ -3,6 +3,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({
+  srcDir: 'src',
   modules: ['@wxt-dev/module-react', '@wxt-dev/auto-icons'],
   autoIcons: {
     baseIconPath: 'public/icons/icon128.png',
@@ -13,8 +14,8 @@ export default defineConfig({
     plugins: [tailwindcss()],
     resolve: {
       alias: [
-        { find: '@', replacement: '/' },
-        { find: '@sidepanel', replacement: '/entrypoints/sidepanel' },
+        { find: '@', replacement: '/src/' },
+        { find: '@sidepanel', replacement: '/src/entrypoints/sidepanel' },
       ],
     },
   }),

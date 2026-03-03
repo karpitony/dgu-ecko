@@ -1,6 +1,6 @@
 import { ExtensionSettings, SettingKey } from '@/types/settings';
 
-const defaultSettings: ExtensionSettings = {
+export const defaultSettings: ExtensionSettings = {
   joyrideBlockEnabled: true,
   modalBlockEnabled: true,
   courseMultiSection: true,
