@@ -3,6 +3,16 @@ import { ExtensionSettings, SettingKey, DEFAULT_SETTINGS } from '@/constants/set
 let settingsCache: ExtensionSettings | null = null;
 
 /**
+ * Storage 변화를 감지하여 메모리 캐시를 실시간으로 동기화
+ */
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName === 'sync' && changes.settings) {
+    console.log('[이코] 설정 변경 감지, 캐시 갱신:', changes.settings.newValue);
+    settingsCache = changes.settings.newValue;
+  }
+});
+
+/**
  * Storage에서 전체 설정을 불러와 캐시를 업데이트합니다.
  */
 export async function loadSettings(): Promise<ExtensionSettings> {

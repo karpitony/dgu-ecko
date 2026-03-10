@@ -119,6 +119,7 @@ export default defineBackground({
       try {
         // 설정 확인
         const autoClose = await getSetting('autoCloseSidePanelOnTabChange');
+        console.log('[이코] 탭 전환 감지 - 설정값:', autoClose);
 
         if (!autoClose) {
           return; // 설정이 꺼져 있으면 아무것도 하지 않음

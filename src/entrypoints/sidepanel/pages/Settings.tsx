@@ -57,7 +57,7 @@ export default function SettingsPanel() {
               >
                 <div className="flex flex-col">
                   <div className="flex items-center">
-                    <span className="text-sm">{item.label}</span>
+                    <span className="text-base">{item.label}</span>
                     {item.isBeta && <BetaBadge />}
                   </div>
                   {item.description && (
