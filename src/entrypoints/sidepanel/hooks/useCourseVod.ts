@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import type { CourseVodData } from '@/types';
 import type { GetCourseVodDataMessage, AllCourseVodDataMessage } from '@/types/messages';
-import dummyData from '@sidepanel/assets/dummyVod.json';
 
 export function useCourseVod() {
   const [courses, setCourses] = useState<CourseVodData[]>([]);
@@ -47,15 +46,28 @@ export function useCourseVod() {
 
   useEffect(() => {
     if (!isChromeRuntime) {
-      setCourses([
-        {
-          courseId: 'dummy',
-          courseTitle: 'Dummy Course',
-          fetchedAt: 'dummy fetchedAt',
-          lectures: dummyData.lectures,
-        },
-      ]);
-      setLoading(false);
+      const setupDummyData = async () => {
+        try {
+          const res = await fetch('/dummy-vod.json');
+          const data = await res.json();
+          const lectures = data.lectures || [];
+
+          setCourses([
+            {
+              courseId: 'dummy',
+              courseTitle: 'Dummy Course',
+              fetchedAt: 'dummy fetchedAt',
+              lectures: lectures,
+            },
+          ]);
+        } catch (error) {
+          console.error('더미 데이터를 불러오는데 실패했습니다.', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      setupDummyData();
       return;
     }
 

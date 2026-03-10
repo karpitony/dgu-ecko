@@ -1,4 +1,4 @@
-import { CourseVodData } from '@sidepanel/types/courseVodData';
+import { CourseVodData } from '@/types/courseVodData';
 import { getDday } from '@/libs/getDday';
 import CourseItem from '@sidepanel/components/common/CourseItem';
 import { IoPlayOutline } from 'react-icons/io5';

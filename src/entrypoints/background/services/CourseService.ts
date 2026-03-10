@@ -6,7 +6,7 @@ import { CourseInfo } from '@/types';
 import { CacheRepository } from '../repositories/CacheRepository';
 import { ContentScriptManager } from '../managers/ContentScriptManager';
 import { CONTENT_SCRIPTS, MARKER_IDS, CONTENT_SCRIPT_TIMEOUT_MS } from '@/constants/background';
-import type { ICourseService } from '../types/services';
+import type { ICourseService } from '@/types/services';
 
 export class CourseService implements ICourseService {
   private courseIdsPromise: Promise<CourseInfo[]> | null = null;
