@@ -1,78 +1,69 @@
-import { ExtensionSettings, SettingKey } from '@/types/settings';
+import { ExtensionSettings, SettingKey, DEFAULT_SETTINGS } from '@/constants/settings';
 
-export const defaultSettings: ExtensionSettings = {
-  joyrideBlockEnabled: true,
-  modalBlockEnabled: true,
-  courseMultiSection: true,
-  tempActiveTabSelector: true,
-  autoCloseSidePanelOnTabChange: true,
-  notificationBadgeFixEnabled: true,
-};
+let settingsCache: ExtensionSettings | null = null;
 
 /**
- * 전체 세팅 객체를 Storage에서 불러오기
+ * Storage에서 전체 설정을 불러와 캐시를 업데이트합니다.
  */
-export function loadSettings(): Promise<ExtensionSettings> {
+export async function loadSettings(): Promise<ExtensionSettings> {
+  // 이미 캐시가 있다면 즉시 반환
+  if (settingsCache) return settingsCache;
+
   return new Promise(resolve => {
     chrome.storage.sync.get('settings', result => {
-      if (result.settings) {
-        resolve({ ...defaultSettings, ...result.settings });
-      } else {
-        // Storage에 없으면 기본값 기록 후 반환
-        chrome.storage.sync.set({ settings: defaultSettings });
-        resolve(defaultSettings);
+      const storedSettings = result.settings || {};
+      // 기본값과 저장된 값을 합성
+      const merged = { ...DEFAULT_SETTINGS, ...storedSettings };
+
+      // 만약 저장된 값이 없었다면 초기값 저장
+      if (!result.settings) {
+        chrome.storage.sync.set({ settings: DEFAULT_SETTINGS });
       }
+
+      settingsCache = merged;
+      resolve(merged);
     });
   });
 }
 
 /**
- * 특정 키의 설정 값 가져오기
+ * 특정 키의 설정 값 가져오기 (캐시 우선)
  */
 export async function getSetting<K extends SettingKey>(key: K): Promise<ExtensionSettings[K]> {
-  await loadSettings();
-  return new Promise(resolve => {
-    chrome.storage.sync.get('settings', result => {
-      const settings: ExtensionSettings = result.settings
-        ? { ...defaultSettings, ...result.settings }
-        : defaultSettings;
-      resolve(settings[key]);
-    });
-  });
+  const settings = await loadSettings();
+  return settings[key];
 }
 
 /**
- * 특정 키의 설정 값 변경 및 Storage 동기화
+ * 특정 키의 설정 값 변경 및 캐시/Storage 동기화
  */
 export async function setSetting<K extends SettingKey>(
   key: K,
   value: ExtensionSettings[K],
 ): Promise<void> {
-  await loadSettings();
-  return new Promise(resolve => {
-    chrome.storage.sync.get('settings', result => {
-      const settings: ExtensionSettings = result.settings
-        ? { ...defaultSettings, ...result.settings }
-        : defaultSettings;
+  const settings = await loadSettings();
 
-      settings[key] = value;
-      chrome.storage.sync.set({ settings }, () => resolve());
+  const updatedSettings = { ...settings, [key]: value };
+
+  return new Promise(resolve => {
+    chrome.storage.sync.set({ settings: updatedSettings }, () => {
+      settingsCache = updatedSettings; // 캐시 업데이트
+      resolve();
     });
   });
 }
 
 /**
- * 전체 설정 덮어쓰기
+ * 전체 설정 덮어쓰기 (Partial 지원)
  */
-export function setSettings(newSettings: Partial<ExtensionSettings>): Promise<void> {
-  return new Promise(resolve => {
-    chrome.storage.sync.get('settings', result => {
-      const settings: ExtensionSettings = result.settings
-        ? { ...defaultSettings, ...result.settings }
-        : defaultSettings;
+export async function setSettings(newSettings: Partial<ExtensionSettings>): Promise<void> {
+  const settings = await loadSettings();
+  const merged = { ...settings, ...newSettings };
 
-      const merged = { ...settings, ...newSettings };
-      chrome.storage.sync.set({ settings: merged }, () => resolve());
+  return new Promise(resolve => {
+    chrome.storage.sync.set({ settings: merged }, () => {
+      settingsCache = merged; // 캐시 업데이트
+      resolve();
     });
   });
 }

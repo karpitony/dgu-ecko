@@ -1,39 +1,36 @@
 import { useEffect, useState } from 'react';
-import { defaultSettings, loadSettings, getSetting, setSetting } from '@/libs/settings';
 import { Link } from 'react-router';
-import { ExtensionSettings } from '@/types/settings';
+import { loadSettings, setSetting } from '@/libs/settings';
+import {
+  SETTINGS_CONFIG,
+  DEFAULT_SETTINGS,
+  ExtensionSettings,
+  SettingKey,
+} from '@/constants/settings';
 
+/**
+ * 베타 배지 컴포넌트
+ */
 function BetaBadge() {
   return (
-    <span
-      className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-semibold ml-1.5"
-      style={{ backgroundColor: '#16a34a', color: '#fff', fontSize: '0.65rem', lineHeight: '1' }}
-    >
+    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[0.7rem] font-bold ml-1.5 bg-green-600 text-white leading-none">
       Beta
     </span>
   );
 }
 
 export default function SettingsPanel() {
-  const [settings, setSettingsState] = useState<ExtensionSettings>(defaultSettings);
+  const [settings, setSettingsState] = useState<ExtensionSettings>(DEFAULT_SETTINGS);
 
   useEffect(() => {
-    loadSettings().then(async () => {
-      setSettingsState({
-        joyrideBlockEnabled: await getSetting('joyrideBlockEnabled'),
-        modalBlockEnabled: await getSetting('modalBlockEnabled'),
-        courseMultiSection: await getSetting('courseMultiSection'),
-        tempActiveTabSelector: await getSetting('tempActiveTabSelector'),
-        autoCloseSidePanelOnTabChange: await getSetting('autoCloseSidePanelOnTabChange'),
-        notificationBadgeFixEnabled: await getSetting('notificationBadgeFixEnabled'),
-      });
-    });
+    loadSettings().then(setSettingsState);
   }, []);
 
-  const handleToggle = (key: keyof typeof settings) => {
+  // 토글 핸들러
+  const handleToggle = (key: SettingKey) => {
     const newValue = !settings[key];
     setSettingsState(prev => ({ ...prev, [key]: newValue }));
-    setSetting(key, newValue); // 유틸 통해 storage + cache 동기화
+    setSetting(key, newValue);
   };
 
   return (
@@ -45,84 +42,45 @@ export default function SettingsPanel() {
         </Link>
       </div>
 
-      {/* AI 튜터 툴팁 */}
-      <div className="flex items-center justify-between w-full">
-        <span className="text-base">AI 튜터 툴팁 끄기</span>
-        <button
-          onClick={() => handleToggle('joyrideBlockEnabled')}
-          className={`w-12 h-6 flex items-center rounded-full p-1 duration-300 ease-in-out
-            ${settings.joyrideBlockEnabled ? 'bg-blue-500 justify-end' : 'bg-gray-300 justify-start'}`}
-        >
-          <span className="w-4 h-4 bg-white rounded-full shadow-md"></span>
-        </button>
-      </div>
+      {/* 설정 그룹 루프 */}
+      {SETTINGS_CONFIG.map(group => (
+        <section key={group.groupName} className="flex flex-col gap-2 w-full">
+          <h3 className="text-lg font-bold uppercase tracking-wider ml-1">{group.groupName}</h3>
 
-      {/* 공지 모달 */}
-      <div className="flex items-center justify-between w-full">
-        <span className="text-base">공지 모달 가리기</span>
-        <button
-          onClick={() => handleToggle('modalBlockEnabled')}
-          className={`w-12 h-6 flex items-center rounded-full p-1 duration-300 ease-in-out
-            ${settings.modalBlockEnabled ? 'bg-blue-500 justify-end' : 'bg-gray-300 justify-start'}`}
-        >
-          <span className="w-4 h-4 bg-white rounded-full shadow-md"></span>
-        </button>
-      </div>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            {group.items.map((item, index) => (
+              <div
+                key={item.key}
+                className={`flex items-center justify-between p-4 ${
+                  index !== group.items.length - 1 ? 'border-b border-gray-50' : ''
+                }`}
+              >
+                <div className="flex flex-col">
+                  <div className="flex items-center">
+                    <span className="text-sm">{item.label}</span>
+                    {item.isBeta && <BetaBadge />}
+                  </div>
+                  {item.description && (
+                    <p className="text-xs text-gray-400 mt-0.5">{item.description}</p>
+                  )}
+                </div>
 
-      {/* 주차별 보기 확장 */}
-      <div className="flex items-center justify-between w-full">
-        <span className="text-base">
-          주차별 보기 확장 <BetaBadge />
-        </span>
-        <button
-          onClick={() => handleToggle('courseMultiSection')}
-          className={`w-12 h-6 flex items-center rounded-full p-1 duration-300 ease-in-out
-            ${settings.courseMultiSection ? 'bg-blue-500 justify-end' : 'bg-gray-300 justify-start'}`}
-        >
-          <span className="w-4 h-4 bg-white rounded-full shadow-md"></span>
-        </button>
-      </div>
-
-      {/* 오늘 날짜 기준 주차 탭 선택 */}
-      <div className="flex items-center justify-between w-full">
-        <span className="text-base">
-          오늘 날짜 기준 주차 탭 선택 <BetaBadge />
-        </span>
-        <button
-          onClick={() => handleToggle('tempActiveTabSelector')}
-          className={`w-12 h-6 flex items-center rounded-full p-1 duration-300 ease-in-out
-            ${settings.tempActiveTabSelector ? 'bg-blue-500 justify-end' : 'bg-gray-300 justify-start'}`}
-        >
-          <span className="w-4 h-4 bg-white rounded-full shadow-md"></span>
-        </button>
-      </div>
-
-      {/* 탭 전환시 자동으로 닫히기 */}
-      <div className="flex items-center justify-between w-full">
-        <span className="text-base">탭 전환시 자동으로 닫히기</span>
-        <button
-          onClick={() => handleToggle('autoCloseSidePanelOnTabChange')}
-          className={`w-12 h-6 flex items-center rounded-full p-1 duration-300 ease-in-out
-            ${settings.autoCloseSidePanelOnTabChange ? 'bg-blue-500 justify-end' : 'bg-gray-300 justify-start'}`}
-        >
-          <span className="w-4 h-4 bg-white rounded-full shadow-md"></span>
-        </button>
-      </div>
-
-      {/* 알림 배지 보정 */}
-      <div className="flex items-center justify-between w-full">
-        <span className="text-base">
-          알림 배지 표시 오류 수정 <BetaBadge />
-        </span>
-        <button
-          onClick={() => handleToggle('notificationBadgeFixEnabled')}
-          className={`w-12 h-6 flex items-center rounded-full p-1 duration-300 ease-in-out
-            ${settings.notificationBadgeFixEnabled ? 'bg-blue-500 justify-end' : 'bg-gray-300 justify-start'}`}
-        >
-          <span className="w-4 h-4 bg-white rounded-full shadow-md"></span>
-        </button>
-      </div>
+                {/* 토글 스위치 */}
+                <button
+                  onClick={() => handleToggle(item.key as SettingKey)}
+                  className={`w-11 h-6 flex items-center rounded-full p-1 transition-colors duration-200 ease-in-out
+                    ${settings[item.key as SettingKey] ? 'bg-blue-500' : 'bg-gray-300'}`}
+                >
+                  <div
+                    className={`w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform duration-200
+                    ${settings[item.key as SettingKey] ? 'translate-x-5' : 'translate-x-0'}`}
+                  />
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
     </div>
   );
 }
-
