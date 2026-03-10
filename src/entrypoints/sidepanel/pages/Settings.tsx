@@ -13,7 +13,7 @@ import {
  */
 function BetaBadge() {
   return (
-    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[0.7rem] font-bold ml-1.5 bg-green-600 text-white leading-none">
+    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[0.7rem] font-bold ml-1 bg-green-600 text-white leading-none">
       Beta
     </span>
   );
@@ -51,14 +51,15 @@ export default function SettingsPanel() {
             {group.items.map((item, index) => (
               <div
                 key={item.key}
-                className={`flex items-center justify-between p-4 ${
+                className={`flex items-center justify-between p-4 gap-4 ${
                   index !== group.items.length - 1 ? 'border-b border-gray-50' : ''
                 }`}
               >
-                <div className="flex flex-col">
+                <div className="flex flex-1 flex-col">
                   <div className="flex items-center">
-                    <span className="text-base">{item.label}</span>
-                    {item.isBeta && <BetaBadge />}
+                    <span className="text-base">
+                      {item.label} {item.isBeta && <BetaBadge />}
+                    </span>
                   </div>
                   {item.description && (
                     <p className="text-xs text-gray-400 mt-0.5">{item.description}</p>

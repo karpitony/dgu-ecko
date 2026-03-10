@@ -1,23 +1,24 @@
 // 1. 데이터 정의
 const RAW_CONFIG = [
   {
-    groupName: '시스템 설정',
+    groupName: '확장프로그램 설정',
     items: [
       {
         key: 'autoCloseSidePanelOnTabChange',
-        label: '탭 전환시 자동으로 닫히기',
+        label: '이클래스 이탈 시 패널 자동 닫기',
+        description: '다른 사이트로 이동하거나 탭을 전환하면 사이드패널을 자동으로 숨깁니다.',
         defaultValue: true,
       },
     ],
   },
   {
-    groupName: '사용 편의 기능',
+    groupName: '이클래스 사용성 개선',
     items: [
-      { key: 'joyrideBlockEnabled', label: 'AI 튜터 툴팁 끄기', defaultValue: true },
-      { key: 'modalBlockEnabled', label: '공지 모달 가리기', defaultValue: true },
+      { key: 'joyrideBlockEnabled', label: 'AI 튜터 툴팁 가리기', defaultValue: true },
+      { key: 'modalBlockEnabled', label: '공지사항 팝업 자동 가리기', defaultValue: true },
       {
         key: 'notificationBadgeFixEnabled',
-        label: '알림 배지 표시 오류 수정',
+        label: '알림 숫자 표시 오류 수정',
         defaultValue: true,
         isBeta: true,
       },
@@ -26,10 +27,10 @@ const RAW_CONFIG = [
   {
     groupName: '학습 편의 기능',
     items: [
-      { key: 'courseMultiSection', label: '주차별 보기 확장', defaultValue: true, isBeta: true },
+      { key: 'courseMultiSection', label: '강의실 주차 탭 확장', defaultValue: true, isBeta: true },
       {
         key: 'tempActiveTabSelector',
-        label: '오늘 날짜 기준 주차 탭 선택',
+        label: '현재 주차 탭 자동 선택',
         defaultValue: true,
         isBeta: true,
       },
